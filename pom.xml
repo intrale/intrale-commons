@@ -1,0 +1,25 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  
+   <parent>
+    <groupId>ar.com.intrale.cloud</groupId>
+    <artifactId>Cloud</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+  </parent>
+  
+  <artifactId>Commons</artifactId>
+  
+    <repositories>
+		<repository>
+			<id>github</id>
+			<url>https://maven.pkg.github.com/llarreta/intrale</url>
+		</repository>
+	</repositories>
+	<distributionManagement>
+	   <repository>
+	     <id>github</id>
+	     <name>GitHub llarreta Apache Maven Packages</name>
+	     <url>https://maven.pkg.github.com/llarreta/intrale</url>
+	   </repository>
+	</distributionManagement>
+</project>
