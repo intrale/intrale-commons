@@ -13,7 +13,17 @@ public class AWSConfiguration {
 	
 	@Value("${region}")
 	private String region;
+	
+	@Value("${clientId}")
+	private String clientId;
+	
 
+	public String getClientId() {
+		return clientId;
+	}
+	public void setClientId(String clientId) {
+		this.clientId = clientId;
+	}
 	public String getUserPoolId() {
 		return userPoolId;
 	}
