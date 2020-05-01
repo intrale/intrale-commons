@@ -4,6 +4,7 @@ import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ExitCodeGenerator;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -46,12 +47,14 @@ public class CloudController {
 		    matchIfMissing = true)
 	@EnableScheduling
 	public class SchedulerConfiguration {
-		private static final int ONE_SECOND = 1000;
 
-		@Scheduled(fixedRate = ONE_SECOND)
+		@Value("${controller.validation.maxInactivity}")
+		private Long maxInactivity;
+
+		@Scheduled(fixedRateString = "${controller.validation.period}")
 		public void execute() {
 			System.out.println("Validando actividad ...");
-			if ((new Date().getTime() - lastExecute.getTime())>(ONE_SECOND*30)) {
+			if ((new Date().getTime() - lastExecute.getTime())>maxInactivity) {
 				int exitCode = SpringApplication.exit(context, new ExitCodeGenerator() {
 						public int getExitCode() {
 					        // return the error code
