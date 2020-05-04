@@ -43,8 +43,7 @@ public class AWSConfiguration {
 
 	@Bean
 	@ConditionalOnProperty(
-		    value="authorizer.enabled", 
-		    havingValue = "true", 
+		    value="authorizer.enabled",
 		    matchIfMissing = false)
     public ConfigurableJWTProcessor configurableJWTProcessor() throws MalformedURLException {
         ResourceRetriever resourceRetriever = 
