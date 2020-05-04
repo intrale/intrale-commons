@@ -14,6 +14,7 @@ import org.springframework.http.MediaType;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -35,9 +36,9 @@ public class CloudController {
 	
 	@RequestMapping(value="/", produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
-	public String apply(@RequestBody String body) {
+	public String apply(@RequestHeader(Authorizer.AUTHORIZATION) String authorization, @RequestBody String body) {
 		lastExecute = new Date();
-		return function.execute(body);
+		return function.execute(authorization, body);
 	}
 
 	@Configuration

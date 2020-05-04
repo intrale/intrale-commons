@@ -16,10 +16,13 @@ public class CloudFunction implements Function<APIGatewayProxyRequestEvent, APIG
 	private IntraleFunction function;
 
 	public APIGatewayProxyResponseEvent apply(APIGatewayProxyRequestEvent request) {
+		
+		String authorization = request.getHeaders().get(Authorizer.AUTHORIZATION);
+		
 		APIGatewayProxyResponseEvent response = new APIGatewayProxyResponseEvent();
 		response.setStatusCode(200);
 
-		response.setBody(function.execute(request.getBody()));
+		response.setBody(function.execute(authorization, request.getBody()));
 		
 		return response;
 	}

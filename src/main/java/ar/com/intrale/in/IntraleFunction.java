@@ -14,17 +14,25 @@ public abstract class IntraleFunction <REQ extends Request, RES extends Response
 	
 	@Autowired
 	private JSONUtils utils;
+	
+	@Autowired
+	private Authorizer authorizer;
 
-	public String execute (String request) {
-		RES responseObject;
+	public String execute (String authorization, String request) {
+		RES responseObject = null;
 		try {
-			REQ requestObject = (REQ) utils.toObject(request, requestType);
-			Collection<Error> errors = requestObject.validate();
-			if (errors.size()>0) {
-				responseObject = responseType.newInstance();
-				responseObject.setErrors(errors);
+			AuthorizationResult result = authorizer.validate("", authorization);
+			if (result.getAuthorized()) {
+				REQ requestObject = (REQ) utils.toObject(request, requestType);
+				Collection<Error> errors = requestObject.validate();
+				if (errors.size()>0) {
+					responseObject = responseType.newInstance();
+					responseObject.setErrors(errors);
+				} else {
+					responseObject = function(requestObject);
+				}
 			} else {
-				responseObject = function(requestObject);
+				return  utils.toString(result.getAuthorizationResponse());
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
