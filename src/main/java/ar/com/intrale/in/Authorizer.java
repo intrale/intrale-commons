@@ -22,7 +22,7 @@ public class Authorizer {
 	@Value("${authorizer.enabled:false}")
 	private Boolean enabled;
 	
-	@Autowired(required = false)
+	@Autowired
 	private ConfigurableJWTProcessor processor;
 	
 	@Autowired
