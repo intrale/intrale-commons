@@ -42,10 +42,7 @@ public class AWSConfiguration {
 	private String jwtUrl;
 
 	@Bean
-	@ConditionalOnProperty(
-		    value="authorizer.enabled", 
-		    havingValue = "false", 
-		    matchIfMissing = false)
+	@ConditionalOnProperty(value="authorizer.enabled")
     public ConfigurableJWTProcessor configurableJWTProcessor() throws MalformedURLException {
         ResourceRetriever resourceRetriever = 
              new DefaultResourceRetriever(connectionTimeout, readTimeout);
