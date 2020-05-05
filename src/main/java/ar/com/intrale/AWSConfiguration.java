@@ -41,6 +41,12 @@ public class AWSConfiguration {
 	@Value("${readTimeout:2000}")
 	private Integer readTimeout;
 	
+	public String getUserPoolIdUrl() {
+		StringBuilder jwtUrl = new StringBuilder();
+		jwtUrl.append(COGNITO_URL_PREFIX).append(region).append(COGNITO_URL_MID).append(userPoolId);
+		return jwtUrl.toString();
+	}
+	
 	@Bean
 	public ConfigurableJWTProcessor JWTProcessor() throws MalformedURLException {
 	
@@ -49,7 +55,7 @@ public class AWSConfiguration {
 		
 		System.out.println("JWTProcessor: Build URL");
 		StringBuilder jwtUrl = new StringBuilder();
-		jwtUrl.append(COGNITO_URL_PREFIX).append(region).append(COGNITO_URL_MID).append(userPoolId).append(COGNITO_URL_SUFIX);
+		jwtUrl.append(getUserPoolIdUrl()).append(COGNITO_URL_SUFIX);
 		System.out.println("JWTProcessor:" + jwtUrl.toString());
 	    URL jwkSetURL= new URL(jwtUrl.toString());
 	    

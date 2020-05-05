@@ -49,7 +49,7 @@ public class Authorizer {
 	
 	private boolean isIssuedCorrectly(JWTClaimsSet claimsSet) {
 		// aca usaba la url en lugar del id del pool
-	       return claimsSet.getIssuer().equals(config.getUserPoolId());
+	       return claimsSet.getIssuer().equals(config.getUserPoolIdUrl());
 	}
 	 
 	private boolean isIdToken(JWTClaimsSet claimsSet) {
