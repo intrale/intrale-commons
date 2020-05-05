@@ -28,11 +28,11 @@ public class JWTProcessor extends DefaultJWTProcessor {
 	private static final String COGNITO_URL_MID = ".amazonaws.com/";
 	private static final String COGNITO_URL_SUFIX = "/.well-known/jwks.json";
 	
-	@Value("${connectionTimeout:2000}")
-	private int connectionTimeout;
+	@Value("${connectionTimeout}")
+	private Integer connectionTimeout = 2000;
 	
-	@Value("${readTimeout:2000}")
-	private int readTimeout;
+	@Value("${readTimeout}")
+	private Integer readTimeout = 2000;
 	
 	@Autowired
 	private AWSConfiguration config;
