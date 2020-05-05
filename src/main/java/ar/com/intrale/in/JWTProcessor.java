@@ -15,7 +15,6 @@ import com.nimbusds.jose.proc.JWSKeySelector;
 import com.nimbusds.jose.proc.JWSVerificationKeySelector;
 import com.nimbusds.jose.util.DefaultResourceRetriever;
 import com.nimbusds.jose.util.ResourceRetriever;
-import com.nimbusds.jwt.proc.ConfigurableJWTProcessor;
 import com.nimbusds.jwt.proc.DefaultJWTProcessor;
 
 import ar.com.intrale.AWSConfiguration;
@@ -30,10 +29,10 @@ public class JWTProcessor extends DefaultJWTProcessor {
 	private static final String COGNITO_URL_SUFIX = "/.well-known/jwks.json";
 	
 	@Value("${connectionTimeout:2000}")
-	private Integer connectionTimeout;
+	private int connectionTimeout;
 	
 	@Value("${readTimeout:2000}")
-	private Integer readTimeout;
+	private int readTimeout;
 	
 	@Autowired
 	private AWSConfiguration config;
