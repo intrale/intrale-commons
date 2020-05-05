@@ -19,17 +19,14 @@ public class Authorizer {
 	
 	public static final String AUTHORIZATION = "Authorization";
 
-	@Value("${authorizer.enabled:false}")
-	private Boolean enabled;
-	
-	@Autowired
+	@Autowired(required = false)
 	private ConfigurableJWTProcessor processor;
 	
 	@Autowired
 	private AWSConfiguration config;
 	
 	public AuthorizationResult validate (String reference, String authorization) throws ParseException, BadJOSEException, JOSEException {
-		if (enabled) {
+		if (processor != null ) {
 			if (authorization!=null){
 				String jwt = authorization.substring("Bearer ".length());
 
