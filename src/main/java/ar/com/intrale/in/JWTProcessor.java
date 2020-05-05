@@ -3,6 +3,7 @@ package ar.com.intrale.in;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
@@ -17,28 +18,34 @@ import com.nimbusds.jose.util.ResourceRetriever;
 import com.nimbusds.jwt.proc.ConfigurableJWTProcessor;
 import com.nimbusds.jwt.proc.DefaultJWTProcessor;
 
+import ar.com.intrale.AWSConfiguration;
+
 @Component
 @ConditionalOnProperty(
 	    value="controller.enabled")
 public class JWTProcessor extends DefaultJWTProcessor {
 
+	private static final String COGNITO_URL_PREFIX = "https://cognito-idp.";
+	private static final String COGNITO_URL_MID = ".amazonaws.com/";
+	private static final String COGNITO_URL_SUFIX = "/.well-known/jwks.json";
+	
 	@Value("${connectionTimeout:2000}")
 	private Integer connectionTimeout;
 	
 	@Value("${readTimeout:2000}")
 	private Integer readTimeout;
-
-	@Value("${jwtUrl:'./jwks.json'}")
-	private String jwtUrl;
+	
+	@Autowired
+	private AWSConfiguration config;
 	
 	public JWTProcessor() throws MalformedURLException {
 		super();
 		
 		ResourceRetriever resourceRetriever = new DefaultResourceRetriever(connectionTimeout, readTimeout);
-	    //https://cognito-idp.{region}.amazonaws.com/{userPoolId}/.well-known/jwks.json.
-	    URL jwkSetURL= new URL(jwtUrl);
-
-	    ConfigurableJWTProcessor jwtProcessor= new DefaultJWTProcessor();
+		
+		StringBuilder jwtUrl = new StringBuilder();
+		jwtUrl.append(COGNITO_URL_PREFIX).append(config.getRegion()).append(COGNITO_URL_MID).append(config.getUserPoolId()).append(COGNITO_URL_SUFIX);
+	    URL jwkSetURL= new URL(jwtUrl.toString());
 	    
 	    //Creates the JSON Web Key (JWK)
 	    JWKSource keySource= new RemoteJWKSet(jwkSetURL, resourceRetriever);
