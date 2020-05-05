@@ -4,10 +4,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 
-@Configuration
+@Configuration(value = AWSConfiguration.NAME)
 @PropertySource("classpath:AwsCredentials.properties")
 public class AWSConfiguration {
 	
+	public static final String NAME = "AWSConfiguration";
+
 	@Value("${userPoolId}")
 	private String userPoolId;
 	

@@ -6,6 +6,7 @@ import java.net.URL;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
 
 import com.nimbusds.jose.JWSAlgorithm;
@@ -20,6 +21,7 @@ import com.nimbusds.jwt.proc.DefaultJWTProcessor;
 import ar.com.intrale.AWSConfiguration;
 
 @Component
+@DependsOn(AWSConfiguration.NAME)
 @ConditionalOnProperty(
 	    value="controller.enabled")
 public class JWTProcessor extends DefaultJWTProcessor {
