@@ -36,7 +36,7 @@ public class CloudController {
 	
 	@RequestMapping(value="/", produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
-	public String apply(@RequestHeader(Authorizer.AUTHORIZATION) String authorization, @RequestBody String body) {
+	public String apply(@RequestHeader(required = false, name = Authorizer.AUTHORIZATION) String authorization, @RequestBody String body) {
 		lastExecute = new Date();
 		return function.execute(authorization, body);
 	}
