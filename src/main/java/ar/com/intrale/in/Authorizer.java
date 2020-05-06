@@ -1,6 +1,8 @@
 package ar.com.intrale.in;
 
 import java.text.ParseException;
+import java.util.Iterator;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -49,7 +51,12 @@ public class Authorizer {
 					 return new AuthorizationResult(Boolean.FALSE, new InvalidTokenErrorResponse());
 			    }
 				
-				claimsSet.getClaims();
+				Map<String, Object> claims = claimsSet.getClaims();
+				Iterator<String> it = claims.keySet().iterator();
+				while (it.hasNext()) {
+					String actual = (String) it.next();
+					System.out.println("Key:" + actual);
+				}
 			
 		
 			} else {
