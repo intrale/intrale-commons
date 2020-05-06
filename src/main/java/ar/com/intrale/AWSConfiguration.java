@@ -49,29 +49,21 @@ public class AWSConfiguration {
 	
 	@Bean
 	public ConfigurableJWTProcessor JWTProcessor() throws MalformedURLException {
-	
-		System.out.println("JWTProcessor:" + connectionTimeout + ", " + readTimeout);
+
 		ResourceRetriever resourceRetriever = new DefaultResourceRetriever(connectionTimeout, readTimeout);
 		
-		System.out.println("JWTProcessor: Build URL");
 		StringBuilder jwtUrl = new StringBuilder();
 		jwtUrl.append(getUserPoolIdUrl()).append(COGNITO_URL_SUFIX);
-		System.out.println("JWTProcessor:" + jwtUrl.toString());
 	    URL jwkSetURL= new URL(jwtUrl.toString());
 	    
-	    System.out.println("JWTProcessor: keySource");
 	    //Creates the JSON Web Key (JWK)
 	    JWKSource keySource= new RemoteJWKSet(jwkSetURL, resourceRetriever);
 	  
-	    System.out.println("JWTProcessor: keySelector");
 	    //RSASSA-PKCS-v1_5 using SHA-256 hash algorithm
 	    JWSKeySelector keySelector= new JWSVerificationKeySelector(JWSAlgorithm.RS256, keySource);
 	    
-	    System.out.println("JWTProcessor: setJWSKeySelector");
 	    ConfigurableJWTProcessor processor = new DefaultJWTProcessor();
 	    processor.setJWSKeySelector(keySelector);
-	    
-	    System.out.println("JWTProcessor: finish constructor");
 	    return processor;
 	}
 
