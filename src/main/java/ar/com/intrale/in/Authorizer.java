@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.proc.BadJOSEException;
 import com.nimbusds.jwt.JWTClaimsSet;
+import com.nimbusds.jwt.proc.BadJWTException;
 import com.nimbusds.jwt.proc.ConfigurableJWTProcessor;
 
 import ar.com.intrale.AWSConfiguration;
@@ -34,8 +35,15 @@ public class Authorizer {
 			
 			if (authorization!=null){
 				String jwt = authorization.substring("Bearer ".length());
-
-				JWTClaimsSet claimsSet = processor.process(jwt, null);
+				JWTClaimsSet claimsSet = null;
+				try {
+					claimsSet = processor.process(jwt, null);
+				} catch (BadJWTException e) {
+					if (e.getMessage().contains("Expired")) {
+						return new AuthorizationResult(Boolean.FALSE, new ExpiredTokenErrorResponse());
+					}
+					throw e;
+				}
 				
 				if ((!isCorrectUserPool(claimsSet)) || (!isCorrectTokenUse(claimsSet, "access"))) {
 					 return new AuthorizationResult(Boolean.FALSE, new InvalidTokenErrorResponse());
