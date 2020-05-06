@@ -25,7 +25,7 @@ public abstract class IntraleFunction <REQ extends Request, RES extends Response
 			if (result.getAuthorized()) {
 				REQ requestObject = (REQ) utils.toObject(request, requestType);
 				Collection<Error> errors = requestObject.validate();
-				if (errors.size()>0) {
+				if ((errors!=null) && (errors.size()>0)) {
 					responseObject = responseType.newInstance();
 					responseObject.setErrors(errors);
 				} else {
