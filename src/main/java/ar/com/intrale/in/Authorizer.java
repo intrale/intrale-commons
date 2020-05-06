@@ -2,6 +2,7 @@ package ar.com.intrale.in;
 
 import java.text.ParseException;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,8 @@ import ar.com.intrale.AWSConfiguration;
 @Component
 public class Authorizer {
 	
+	private static final String COGNITO_GROUPS = "cognito:groups";
+
 	private static final String TOKEN_USE = "token_use";
 
 	public static final String AUTHORIZATION = "Authorization";
@@ -28,6 +31,9 @@ public class Authorizer {
 	
 	@Value("${authorizer.enabled}")
 	private Boolean enabled;
+	
+	@Value("${authorizer.group:'SIN_GRUPO'}")
+	private String group;
 	
 	@Autowired
 	private AWSConfiguration config;
@@ -51,13 +57,12 @@ public class Authorizer {
 					 return new AuthorizationResult(Boolean.FALSE, new InvalidTokenErrorResponse());
 			    }
 				
-				Map<String, Object> claims = claimsSet.getClaims();
-				Iterator<String> it = claims.keySet().iterator();
-				while (it.hasNext()) {
-					String actual = (String) it.next();
-					System.out.println("Key:" + actual);
+				// Validando si el usuario pertenece al grupo que tiene permitido ejecutar esta accion
+				
+				List groups = (List) claimsSet.getClaims().get(COGNITO_GROUPS);
+				if (!groups.contains(group)) {
+					return new AuthorizationResult(Boolean.FALSE, new UnauthorizedActionErrorResponse());
 				}
-			
 		
 			} else {
 				return new AuthorizationResult(Boolean.FALSE, new NotAuthorizationFoundErrorResponse());
