@@ -24,12 +24,16 @@ public abstract class IntraleFunction <REQ extends Request, RES extends Response
 			AuthorizationResult result = authorizer.validate("", authorization);
 			if (result.getAuthorized()) {
 				REQ requestObject = (REQ) utils.toObject(request, requestType);
-				Collection<Error> errors = requestObject.validate();
-				if ((errors!=null) && (errors.size()>0)) {
-					responseObject = responseType.newInstance();
-					responseObject.setErrors(errors);
+				if (requestObject!=null) {
+					Collection<Error> errors = requestObject.validate();
+					if ((errors!=null) && (errors.size()>0)) {
+						responseObject = responseType.newInstance();
+						responseObject.setErrors(errors);
+					} else {
+						responseObject = function(requestObject);
+					}
 				} else {
-					responseObject = function(requestObject);
+					return utils.toString(new NullRequestObjectErrorResponse());
 				}
 			} else {
 				return  utils.toString(result.getAuthorizationResponse());
