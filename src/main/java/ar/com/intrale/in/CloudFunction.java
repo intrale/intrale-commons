@@ -25,11 +25,11 @@ public class CloudFunction implements Function<APIGatewayProxyRequestEvent, APIG
 		
 		response.setStatusCode(200);
 		
-		// CORSS avaiable
+		// CORS avaiable
 		Map<String, String> headers = new HashMap<String, String>();
 		headers.put("Access-Control-Allow-Origin", "*");
 		headers.put("Access-Control-Allow-Methods", "GET, OPTIONS, HEAD, PUT, POST");
-		response.setHeaders(headers);
+		response.setHeaders(headers); 
 
 		response.setBody(function.execute(authorization, request.getBody()));
 		
