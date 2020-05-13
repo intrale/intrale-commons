@@ -1,5 +1,7 @@
 package ar.com.intrale.in;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Function;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +22,14 @@ public class CloudFunction implements Function<APIGatewayProxyRequestEvent, APIG
 		String authorization = request.getHeaders().get(Authorizer.AUTHORIZATION);
 		
 		APIGatewayProxyResponseEvent response = new APIGatewayProxyResponseEvent();
+		
 		response.setStatusCode(200);
+		
+		// CORSS avaiable
+		Map<String, String> headers = new HashMap<String, String>();
+		headers.put("Access-Control-Allow-Origin", "*");
+		headers.put("Access-Control-Allow-Methods", "GET, OPTIONS, HEAD, PUT, POST");
+		response.setHeaders(headers);
 
 		response.setBody(function.execute(authorization, request.getBody()));
 		
