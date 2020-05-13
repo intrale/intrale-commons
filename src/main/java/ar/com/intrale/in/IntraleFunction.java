@@ -3,9 +3,13 @@ package ar.com.intrale.in;
 import java.lang.reflect.ParameterizedType;
 import java.util.Collection;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public abstract class IntraleFunction <REQ extends Request, RES extends Response> {
+	
+	private static final Logger LOGGER = LoggerFactory.getLogger(IntraleFunction.class);
 	
 	public static final String NAME = "INTRALE_FUNCTION";
 	
@@ -19,6 +23,7 @@ public abstract class IntraleFunction <REQ extends Request, RES extends Response
 	private Authorizer authorizer;
 
 	public String execute (String authorization, String request) {
+		LOGGER.debug("Iniciando ejecucion IntraleFunction");
 		RES responseObject = null;
 		try {
 			AuthorizationResult result = authorizer.validate("", authorization);
@@ -41,6 +46,8 @@ public abstract class IntraleFunction <REQ extends Request, RES extends Response
 		} catch (Exception e) {
 			e.printStackTrace();
 			return utils.toString(new UnexpectedErrorResponse());
+		} finally {
+			LOGGER.debug("Fin ejecucion IntraleFunction");
 		}
 		return utils.toString(responseObject);
 		

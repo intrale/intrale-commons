@@ -19,12 +19,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 @RestController
 @ConditionalOnProperty(
 	    value="controller.enabled", 
 	    havingValue = "true", 
 	    matchIfMissing = true)
 public class CloudController {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(CloudController.class);
 	
 	private Date lastExecute = new Date();
 	
@@ -37,8 +42,11 @@ public class CloudController {
 	@RequestMapping(value="/", produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
 	public String apply(@RequestHeader(required = false, name = Authorizer.AUTHORIZATION) String authorization, @RequestBody String body) {
+		LOGGER.debug("Atendiendo peticion: CloudController");
 		lastExecute = new Date();
-		return function.execute(authorization, body);
+		String response = function.execute(authorization, body);
+		LOGGER.debug("Fin atencion de peticion: CloudController");
+		return response;
 	}
 
 	@Configuration
