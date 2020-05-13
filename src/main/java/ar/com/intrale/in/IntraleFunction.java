@@ -33,7 +33,7 @@ public abstract class IntraleFunction <REQ extends Request, RES extends Response
 						responseObject = function(requestObject);
 					}
 				} else {
-					return utils.toString(new NullRequestObjectErrorResponse());
+					return utils.toString(new InvalidRequestObjectErrorResponse());
 				}
 			} else {
 				return  utils.toString(result.getAuthorizationResponse());
