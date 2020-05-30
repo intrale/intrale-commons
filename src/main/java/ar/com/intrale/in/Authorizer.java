@@ -60,7 +60,7 @@ public class Authorizer {
 				// Validando si el usuario pertenece al grupo que tiene permitido ejecutar esta accion
 				
 				List groups = (List) claimsSet.getClaims().get(COGNITO_GROUPS);
-				if (!groups.contains(group)) {
+				if ((groups==null) || (!groups.contains(group))) {
 					return new AuthorizationResult(Boolean.FALSE, new UnauthorizedActionErrorResponse());
 				}
 		
