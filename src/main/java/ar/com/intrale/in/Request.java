@@ -21,6 +21,8 @@ public abstract class Request {
 			}
 		}
 		
+		//FIXME: Aca deberiamos lanzar el error badrequest en caso de que corresponda
+		
 		return errors;
 	}
 	

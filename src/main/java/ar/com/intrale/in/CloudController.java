@@ -2,6 +2,8 @@ package ar.com.intrale.in;
 
 import java.util.Date;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,16 +13,13 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @RestController
 @ConditionalOnProperty(
@@ -40,11 +39,11 @@ public class CloudController {
 	private IntraleFunction function;
 	
 	@RequestMapping(value="/", produces = MediaType.APPLICATION_JSON_VALUE)
-	@ResponseBody
-	public String apply(@RequestHeader(required = false, name = Authorizer.AUTHORIZATION) String authorization, @RequestBody String body) {
+	//@ResponseBody
+	public ResponseEntity<String> apply(@RequestHeader(required = false, name = Authorizer.AUTHORIZATION) String authorization, @RequestBody String body) {
 		LOGGER.debug("Atendiendo peticion: CloudController");
 		lastExecute = new Date();
-		String response = function.execute(authorization, body);
+		ResponseEntity response = function.execute(authorization, body);
 		LOGGER.debug("Fin atencion de peticion: CloudController");
 		return response;
 	}

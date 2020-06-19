@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
@@ -29,15 +30,15 @@ public class CloudFunction implements Function<APIGatewayProxyRequestEvent, APIG
 		
 		APIGatewayProxyResponseEvent response = new APIGatewayProxyResponseEvent();
 		
-		response.setStatusCode(200);
-		
 		// CORS avaiable
 		Map<String, String> headers = new HashMap<String, String>();
 		headers.put("Access-Control-Allow-Origin", "*");
 		headers.put("Access-Control-Allow-Methods", "GET, OPTIONS, HEAD, PUT, POST");
 		response.setHeaders(headers); 
 
-		response.setBody(function.execute(authorization, request.getBody()));
+		ResponseEntity<String> responseEntity = function.execute(authorization, request.getBody()); 
+		response.setStatusCode(responseEntity.getStatusCodeValue());
+		response.setBody(responseEntity.getBody());
 		
 		LOGGER.debug("Fin atencion de peticion: CloudFunction");
 		return response;

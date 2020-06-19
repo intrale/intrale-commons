@@ -1,12 +1,12 @@
 package ar.com.intrale.in;
 
 import java.text.ParseException;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import com.nimbusds.jose.JOSEException;
@@ -48,24 +48,24 @@ public class Authorizer {
 					claimsSet = processor.process(jwt, null);
 				} catch (BadJWTException e) {
 					if (e.getMessage().contains("Expired")) {
-						return new AuthorizationResult(Boolean.FALSE, new ExpiredTokenErrorResponse());
+						return new AuthorizationResult(Boolean.FALSE, new ResponseEntity<String>("TOKEN_EXPIRED", HttpStatus.UNAUTHORIZED));
 					}
 					throw e;
 				}
 				
 				if ((!isCorrectUserPool(claimsSet)) || (!isCorrectTokenUse(claimsSet, "access"))) {
-					 return new AuthorizationResult(Boolean.FALSE, new InvalidTokenErrorResponse());
+					return new AuthorizationResult(Boolean.FALSE, new ResponseEntity<String>("INVALID_TOKEN", HttpStatus.UNAUTHORIZED));
 			    }
 				
 				// Validando si el usuario pertenece al grupo que tiene permitido ejecutar esta accion
 				
 				List groups = (List) claimsSet.getClaims().get(COGNITO_GROUPS);
 				if ((groups==null) || (!groups.contains(group))) {
-					return new AuthorizationResult(Boolean.FALSE, new UnauthorizedActionErrorResponse());
+					return new AuthorizationResult(Boolean.FALSE, new ResponseEntity<String>("UNAUTHORIZED", HttpStatus.UNAUTHORIZED));
 				}
 		
 			} else {
-				return new AuthorizationResult(Boolean.FALSE, new NotAuthorizationFoundErrorResponse());
+				return new AuthorizationResult(Boolean.FALSE, new ResponseEntity<String>("NOT_AUTHORIZATION_FOUND", HttpStatus.UNAUTHORIZED));
 			}
 			
 		}

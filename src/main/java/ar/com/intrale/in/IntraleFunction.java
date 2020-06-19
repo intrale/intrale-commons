@@ -6,6 +6,8 @@ import java.util.Collection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 public abstract class IntraleFunction <REQ extends Request, RES extends Response> {
 	
@@ -22,35 +24,39 @@ public abstract class IntraleFunction <REQ extends Request, RES extends Response
 	@Autowired
 	private Authorizer authorizer;
 
-	public String execute (String authorization, String request) {
+	public ResponseEntity<String> execute (String authorization, String request) {
 		LOGGER.debug("Iniciando ejecucion IntraleFunction");
 		RES responseObject = null;
 		try {
 			AuthorizationResult result = authorizer.validate("", authorization);
 			if (result.getAuthorized()) {
 				REQ requestObject = (REQ) utils.toObject(request, requestType);
+				
 				if (requestObject!=null) {
 					Collection<Error> errors = requestObject.validate();
+					
 					if ((errors!=null) && (errors.size()>0)) {
 						responseObject = responseType.newInstance();
 						responseObject.setErrors(errors);
+						return new ResponseEntity<String>(utils.toString(responseObject), HttpStatus.BAD_REQUEST);	
 					} else {
 						responseObject = function(requestObject);
+						return new ResponseEntity<String>(utils.toString(responseObject), HttpStatus.OK);
 					}
+					
 				} else {
-					return utils.toString(new InvalidRequestObjectErrorResponse());
+					return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
 				}
+				
 			} else {
-				return  utils.toString(result.getAuthorizationResponse());
+				LOGGER.info("No se encuentra autorizado para ejecutar:" + authorization);
+				return result.getResponseEntity();
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
-			return utils.toString(new UnexpectedErrorResponse());
+			return new ResponseEntity<String>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		} finally {
 			LOGGER.debug("Fin ejecucion IntraleFunction");
 		}
-		return utils.toString(responseObject);
-		
 	}
 	
 	protected abstract RES function(REQ request);
