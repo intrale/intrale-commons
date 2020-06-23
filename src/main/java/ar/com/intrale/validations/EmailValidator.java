@@ -13,13 +13,13 @@ public class EmailValidator extends PatternValidator {
 	}
 
 	@Override
-	protected String getDescriptionError() {
-		return " does not have email format (" + getPattern() + ")";
+	protected String getFinalErrorDescription() {
+		return "does not have email format (" + getPattern() + ")";
 	}
 
 	@Override
-	protected String getCodeSufix() {
-		return "_format";
+	protected String getPostFix() {
+		return "format";
 	}
 
 }

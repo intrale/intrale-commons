@@ -3,9 +3,10 @@ package ar.com.intrale.validations;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.springframework.beans.BeansException;
 import org.springframework.util.StringUtils;
 
-import ar.com.intrale.in.Error;
+import ar.com.intrale.in.IntraleFunctionException;
 
 public abstract class PatternValidator extends Validator {
 
@@ -20,24 +21,13 @@ public abstract class PatternValidator extends Validator {
 	public abstract String getPattern();
 
 	@Override
-	public Error validate() {
-		if (!StringUtils.isEmpty(this.value)) {
-			matcher = pattern.matcher(this.value);
+	public void validate() throws BeansException, IntraleFunctionException {
+		if (!StringUtils.isEmpty(getReferenceValue())) {
+			matcher = pattern.matcher((String) getReferenceValue());
 			if(!matcher.matches()) {
-				StringBuilder codeBuilder = new StringBuilder();
-				codeBuilder.append("field_").append(this.reference).append(getCodeSufix());
-				
-				StringBuilder descriptionBuilder = new StringBuilder();
-				descriptionBuilder.append("Field ").append(this.reference).append(getDescriptionError());
-				
-				return new Error(codeBuilder.toString(), descriptionBuilder.toString());
+				throwException();
 			} 
 		}
-		return null;
 	}
-
-	protected abstract String getDescriptionError();
-
-	protected abstract String getCodeSufix();
 
 }

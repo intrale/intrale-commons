@@ -1,16 +1,14 @@
 package ar.com.intrale.in;
 
-import java.text.ParseException;
 import java.util.List;
 
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
-import com.nimbusds.jose.JOSEException;
-import com.nimbusds.jose.proc.BadJOSEException;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.proc.BadJWTException;
 import com.nimbusds.jwt.proc.ConfigurableJWTProcessor;
@@ -38,7 +36,10 @@ public class Authorizer {
 	@Autowired
 	private AWSConfiguration config;
 	
-	public AuthorizationResult validate (String reference, String authorization) throws ParseException, BadJOSEException, JOSEException {
+	@Autowired
+	private ApplicationContext applicationContext;
+	
+	public void validate (String authorization) throws BeansException, IntraleFunctionException {
 		if (enabled ) {
 			
 			if (authorization!=null){
@@ -48,28 +49,31 @@ public class Authorizer {
 					claimsSet = processor.process(jwt, null);
 				} catch (BadJWTException e) {
 					if (e.getMessage().contains("Expired")) {
-						return new AuthorizationResult(Boolean.FALSE, new ResponseEntity<String>("TOKEN_EXPIRED", HttpStatus.UNAUTHORIZED));
+						throwException(HttpStatus.UNAUTHORIZED, "TOKEN_EXPIRED");
 					}
-					throw e;
-				}
+					throwException(HttpStatus.BAD_REQUEST, "BAD_TOKEN");
+				} catch (Exception e) {
+					throwException(HttpStatus.INTERNAL_SERVER_ERROR, "UNEXPECTED_EXCEPTION");
+				} 
 				
 				if ((!isCorrectUserPool(claimsSet)) || (!isCorrectTokenUse(claimsSet, "access"))) {
-					return new AuthorizationResult(Boolean.FALSE, new ResponseEntity<String>("INVALID_TOKEN", HttpStatus.UNAUTHORIZED));
+					throwException(HttpStatus.UNAUTHORIZED, "INVALID_TOKEN");
 			    }
 				
 				// Validando si el usuario pertenece al grupo que tiene permitido ejecutar esta accion
-				
 				List groups = (List) claimsSet.getClaims().get(COGNITO_GROUPS);
 				if ((groups==null) || (!groups.contains(group))) {
-					return new AuthorizationResult(Boolean.FALSE, new ResponseEntity<String>("UNAUTHORIZED", HttpStatus.UNAUTHORIZED));
+					throwException(HttpStatus.UNAUTHORIZED, "UNAUTHORIZED");
 				}
-		
 			} else {
-				return new AuthorizationResult(Boolean.FALSE, new ResponseEntity<String>("NOT_AUTHORIZATION_FOUND", HttpStatus.UNAUTHORIZED));
+				throwException(HttpStatus.UNAUTHORIZED, "NOT_AUTHORIZATION_FOUND");
 			}
 			
 		}
-		return new AuthorizationResult(Boolean.TRUE, null);
+	}
+	
+	public void throwException(HttpStatus status, String description) throws BeansException, IntraleFunctionException {
+		throw (IntraleFunctionException) applicationContext.getBean(IntraleFunctionException.NAME, status, description);
 	}
 	
 	

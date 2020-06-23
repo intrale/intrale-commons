@@ -1,27 +1,36 @@
 package ar.com.intrale.validations;
 
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import ar.com.intrale.in.Error;
+import ar.com.intrale.in.IntraleFunctionException;
 
+@Component
+@Scope(scopeName = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class NotEmptyValidator extends Validator {
 
-	public NotEmptyValidator(String reference, String value) {
-		super(reference, value);
+	public NotEmptyValidator(String reference, Object data) {
+		super(reference, data);
 	}
 
 	@Override
-	public Error validate() {
-		if (StringUtils.isEmpty(this.value)) {
-			StringBuilder codeBuilder = new StringBuilder();
-			codeBuilder.append("field_").append(this.reference).append("_empty");
-			
-			StringBuilder descriptionBuilder = new StringBuilder();
-			descriptionBuilder.append("Field ").append(this.reference).append(" cannot be empty.");
-			
-			return new Error(codeBuilder.toString(), descriptionBuilder.toString());
+	public void validate() throws BeansException, IntraleFunctionException {
+		if (StringUtils.isEmpty(getReferenceValue())) {
+			throwException();
 		}
-		return null;
+	}
+
+	@Override
+	protected String getFinalErrorDescription() {
+		return "empty";
+	}
+
+	@Override
+	protected String getPostFix() {
+		return "cannot be empty.";
 	}
 
 }

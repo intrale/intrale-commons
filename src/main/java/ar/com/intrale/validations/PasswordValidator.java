@@ -23,13 +23,13 @@ public class PasswordValidator extends PatternValidator {
 	}
 
 	@Override
-	protected String getDescriptionError() {
-		return " does not have a valid format (" + getPattern() + ")";
+	protected String getFinalErrorDescription() {
+		return "does not have a valid format (" + getPattern() + ")";
 	}
 
 	@Override
-	protected String getCodeSufix() {
-		return "_format";
+	protected String getPostFix() {
+		return "format";
 	}
 
 }

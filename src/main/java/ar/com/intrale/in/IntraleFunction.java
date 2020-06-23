@@ -1,63 +1,73 @@
 package ar.com.intrale.in;
 
 import java.lang.reflect.ParameterizedType;
-import java.util.Collection;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 public abstract class IntraleFunction <REQ extends Request, RES extends Response> {
 	
+	private static final String UNEXPECTED = "UNEXPECTED";
+
 	private static final Logger LOGGER = LoggerFactory.getLogger(IntraleFunction.class);
 	
 	public static final String NAME = "INTRALE_FUNCTION";
 	
 	private final Class<REQ> requestType = (Class<REQ>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
-	private final Class<RES> responseType = (Class<RES>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[1];
 	
 	@Autowired
-	private JSONUtils utils;
+	private ObjectMapper objectMapper;
 	
 	@Autowired
 	private Authorizer authorizer;
+	
+	@Autowired
+	private ApplicationContext applicationContext;
 
 	public ResponseEntity<String> execute (String authorization, String request) {
 		LOGGER.debug("Iniciando ejecucion IntraleFunction");
-		RES responseObject = null;
 		try {
-			AuthorizationResult result = authorizer.validate("", authorization);
-			if (result.getAuthorized()) {
-				REQ requestObject = (REQ) utils.toObject(request, requestType);
-				
-				if (requestObject!=null) {
-					Collection<Error> errors = requestObject.validate();
-					
-					if ((errors!=null) && (errors.size()>0)) {
-						responseObject = responseType.newInstance();
-						responseObject.setErrors(errors);
-						return new ResponseEntity<String>(utils.toString(responseObject), HttpStatus.BAD_REQUEST);	
-					} else {
-						responseObject = function(requestObject);
-						return new ResponseEntity<String>(utils.toString(responseObject), HttpStatus.OK);
-					}
-					
-				} else {
-					return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
-				}
-				
+			authorizer.validate(authorization);
+			
+			REQ requestObject = (REQ) objectMapper.readValue(request, requestType);
+
+			if (requestObject!=null) {
+				requestObject.initialize(applicationContext);
+				requestObject.validate();
+				return new ResponseEntity<String>(objectMapper.writeValueAsString(function(requestObject)), HttpStatus.OK);
 			} else {
-				LOGGER.info("No se encuentra autorizado para ejecutar:" + authorization);
-				return result.getResponseEntity();
+				return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
 			}
+		} catch (IntraleFunctionException e) {
+			return e.getResponseEntity();		
 		} catch (Exception e) {
-			return new ResponseEntity<String>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+			return getResponseEntity(e);
 		} finally {
 			LOGGER.debug("Fin ejecucion IntraleFunction");
 		}
 	}
 	
-	protected abstract RES function(REQ request);
+	protected abstract RES function(REQ request)  throws BeansException, IntraleFunctionException ;
+	
+	public IntraleFunctionException throwException(HttpStatus status, String errorCode, String errorDescription) throws BeansException, IntraleFunctionException {
+		throw (IntraleFunctionException) applicationContext.getBean(IntraleFunctionException.NAME, status, new Error(errorCode, errorDescription));
+	}
+	
+	public ResponseEntity<String> getResponseEntity(Exception exception) {
+		try {
+			throwException(HttpStatus.INTERNAL_SERVER_ERROR, UNEXPECTED, exception.getMessage());
+		} catch (BeansException e) {
+			return new ResponseEntity<String>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+		} catch (IntraleFunctionException e) {
+			return e.getResponseEntity();
+		}
+		return null;
+	}
 }
