@@ -12,6 +12,8 @@ import org.springframework.http.ResponseEntity;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import ar.com.intrale.annotations.IOLogger;
+
 public abstract class IntraleFunction <REQ extends Request, RES extends Response> {
 	
 	private static final String UNEXPECTED = "UNEXPECTED";
@@ -31,6 +33,7 @@ public abstract class IntraleFunction <REQ extends Request, RES extends Response
 	@Autowired
 	private ApplicationContext applicationContext;
 
+	@IOLogger
 	public ResponseEntity<String> execute (String authorization, String request) {
 		LOGGER.debug("Iniciando ejecucion IntraleFunction");
 		try {
