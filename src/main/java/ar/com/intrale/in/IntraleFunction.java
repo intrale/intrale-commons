@@ -67,7 +67,7 @@ public abstract class IntraleFunction <REQ extends Request, RES extends Response
 		try {
 			throwException(HttpStatus.INTERNAL_SERVER_ERROR, UNEXPECTED, exception.getMessage());
 		} catch (BeansException e) {
-			return new ResponseEntity<String>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<String>(IntraleFunctionException.getStackTrace(e), HttpStatus.INTERNAL_SERVER_ERROR);
 		} catch (IntraleFunctionException e) {
 			return e.getResponseEntity();
 		}

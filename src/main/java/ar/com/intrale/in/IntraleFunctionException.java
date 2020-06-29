@@ -1,5 +1,7 @@
 package ar.com.intrale.in;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -37,7 +39,7 @@ public class IntraleFunctionException extends Exception {
 		try {
 			return new ResponseEntity<String>(mapper.writeValueAsString(errors), status);
 		} catch (JsonProcessingException e) {
-			return new ResponseEntity<String>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<String>(IntraleFunctionException.getStackTrace(e), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 
@@ -61,4 +63,11 @@ public class IntraleFunctionException extends Exception {
 		}
 	}
 
+	public static String getStackTrace(Throwable e) {
+		StringWriter sWriter = new StringWriter();
+		PrintWriter pilaMensajes = new PrintWriter(sWriter);
+		e.printStackTrace(pilaMensajes);
+		String stackTrace = sWriter.toString();
+		return stackTrace;
+	}
 }

@@ -12,9 +12,11 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-@Component
+@Component(MultipleIntraleFunctionException.NAME)
 @Scope(scopeName = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class MultipleIntraleFunctionException extends IntraleFunctionException {
+	
+	public static final String NAME = "MULTIPLE_INTRALE_FUNCTION_EXCEPTION";
 	
 	private HttpStatus status;
 	
@@ -45,7 +47,7 @@ public class MultipleIntraleFunctionException extends IntraleFunctionException {
 		try {
 			return new ResponseEntity<String>(mapper.writeValueAsString(getErrors()), status);
 		} catch (JsonProcessingException e) {
-			return new ResponseEntity<String>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<String>(IntraleFunctionException.getStackTrace(e), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 	
