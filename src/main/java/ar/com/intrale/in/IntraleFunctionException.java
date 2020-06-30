@@ -12,6 +12,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -60,6 +61,15 @@ public class IntraleFunctionException extends Exception {
 		}
 		if (error!=null) {
 			this.errors.add(error);
+		}
+	}
+	
+	IntraleFunctionException(HttpStatus status, String errorCode){
+		if (status!=null) {
+			this.status = status;
+		}
+		if (errorCode!=null) {
+			this.errors.add(new Error(errorCode, ""));
 		}
 	}
 

@@ -40,8 +40,8 @@ public abstract class Request {
 				validator.validate();
 			} catch (BeansException e) {
 				initializeMultipleExceptions();
-				exception.add((IntraleFunctionException) applicationContext.getBean(IntraleFunctionException.NAME, 
-						HttpStatus.INTERNAL_SERVER_ERROR, IntraleFunctionException.getStackTrace(e)));
+				exception.add((IntraleFunctionException) applicationContext.getBean(
+						IntraleFunctionException.NAME, HttpStatus.INTERNAL_SERVER_ERROR, IntraleFunctionException.getStackTrace(e)));
 			} catch (IntraleFunctionException e) {
 				initializeMultipleExceptions();
 				exception.add(e);
