@@ -7,12 +7,10 @@ import java.util.Collection;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -29,9 +27,6 @@ public class IntraleFunctionException extends Exception {
 	private HttpStatus status;
 	private Collection<Error> errors = new ArrayList<Error>();
 	
-	@Autowired
-	protected ApplicationContext applicationContext;
-	
 	public Collection<Error> getErrors() {
 		return errors;
 	}
@@ -44,9 +39,9 @@ public class IntraleFunctionException extends Exception {
 		}
 	}
 
-	IntraleFunctionException(){}
+	public IntraleFunctionException(){}
 	
-	IntraleFunctionException(HttpStatus status, Collection<Error> errors){
+	public IntraleFunctionException(HttpStatus status, Collection<Error> errors){
 		if (status!=null) {
 			this.status = status;
 		}
@@ -55,7 +50,7 @@ public class IntraleFunctionException extends Exception {
 		}
 	}
 	
-	IntraleFunctionException(HttpStatus status, Error error){
+	public IntraleFunctionException(HttpStatus status, Error error){
 		if (status!=null) {
 			this.status = status;
 		}
@@ -64,7 +59,7 @@ public class IntraleFunctionException extends Exception {
 		}
 	}
 	
-	IntraleFunctionException(HttpStatus status, String errorCode){
+	public IntraleFunctionException(HttpStatus status, String errorCode){
 		if (status!=null) {
 			this.status = status;
 		}

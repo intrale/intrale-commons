@@ -4,8 +4,6 @@ import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.NotReadablePropertyException;
 import org.springframework.beans.PropertyAccessorFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpStatus;
 
 import ar.com.intrale.in.Error;
@@ -20,12 +18,13 @@ public abstract class Validator {
 	protected Object data;
 	
 	protected BeanWrapper beanWrapper;
-
-	@Autowired
-	protected ApplicationContext applicationContext;
 	
 	public Validator(String reference, Object data) {
 		this.reference = reference;
+		setData(data);
+	}
+
+	private void setData(Object data) {
 		this.data = data;
 		beanWrapper = PropertyAccessorFactory.forBeanPropertyAccess(data);
 	}
@@ -61,7 +60,7 @@ public abstract class Validator {
 	protected abstract String getPostFix();
 	
 	public IntraleFunctionException throwException() throws BeansException, IntraleFunctionException {
-		throw (IntraleFunctionException) applicationContext.getBean(IntraleFunctionException.NAME, HttpStatus.BAD_REQUEST, new Error(getErrorCode(), getDescriptionError()));
+		throw new IntraleFunctionException(HttpStatus.BAD_REQUEST, new Error(getErrorCode(), getDescriptionError()));
 	}
 
 	

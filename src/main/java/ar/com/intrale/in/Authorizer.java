@@ -5,7 +5,6 @@ import java.util.List;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
@@ -35,9 +34,6 @@ public class Authorizer {
 	
 	@Autowired
 	private AWSConfiguration config;
-	
-	@Autowired
-	private ApplicationContext applicationContext;
 	
 	public void validate (String authorization) throws BeansException, IntraleFunctionException {
 		if (enabled ) {
@@ -73,7 +69,7 @@ public class Authorizer {
 	}
 	
 	public void throwException(HttpStatus status, String description) throws BeansException, IntraleFunctionException {
-		throw (IntraleFunctionException) applicationContext.getBean(IntraleFunctionException.NAME, status, description);
+		throw new IntraleFunctionException (status, description);
 	}
 	
 	
