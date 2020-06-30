@@ -2,6 +2,7 @@ package ar.com.intrale.validations;
 
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.NotReadablePropertyException;
 import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -32,7 +33,11 @@ public abstract class Validator {
 	public abstract void validate()  throws BeansException, IntraleFunctionException;
 	
 	public Object getValue(String name) {
-		return beanWrapper.getPropertyValue(name);
+		try {
+			return beanWrapper.getPropertyValue(name);
+		} catch(NotReadablePropertyException e) {
+			return null;
+		}
 	}
 	
 	public Object getReferenceValue() {
