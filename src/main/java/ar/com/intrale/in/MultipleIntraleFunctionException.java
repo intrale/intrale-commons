@@ -4,17 +4,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
-import org.springframework.beans.factory.config.ConfigurableBeanFactory;
-import org.springframework.context.annotation.Scope;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Component;
 
-@Component(MultipleIntraleFunctionException.NAME)
-@Scope(scopeName = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class MultipleIntraleFunctionException extends IntraleFunctionException {
-	
-	public static final String NAME = "MULTIPLE_INTRALE_FUNCTION_EXCEPTION";
 	
 	private HttpStatus status;
 	

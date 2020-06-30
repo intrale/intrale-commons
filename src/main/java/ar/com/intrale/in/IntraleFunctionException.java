@@ -6,23 +6,15 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.ConfigurableBeanFactory;
-import org.springframework.context.annotation.Scope;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-@Component(IntraleFunctionException.NAME)
-@Scope(scopeName = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class IntraleFunctionException extends Exception {
 
-	public static final String NAME = "INTRALE_FUNCTION_EXCEPTION";
-
-	@Autowired
-	protected ObjectMapper mapper;
+	protected ObjectMapper mapper = new ObjectMapper();
 	
 	private HttpStatus status;
 	private Collection<Error> errors = new ArrayList<Error>();

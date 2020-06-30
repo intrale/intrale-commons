@@ -24,8 +24,7 @@ public abstract class IntraleFunction <REQ extends Request, RES extends Response
 	
 	private final Class<REQ> requestType = (Class<REQ>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
 	
-	@Autowired
-	private ObjectMapper objectMapper;
+	private ObjectMapper objectMapper = new ObjectMapper();
 	
 	@Autowired
 	private Authorizer authorizer;
@@ -60,7 +59,7 @@ public abstract class IntraleFunction <REQ extends Request, RES extends Response
 	protected abstract RES function(REQ request)  throws BeansException, IntraleFunctionException ;
 	
 	public IntraleFunctionException throwException(HttpStatus status, String errorCode, String errorDescription) throws BeansException, IntraleFunctionException {
-		throw (IntraleFunctionException) applicationContext.getBean(IntraleFunctionException.NAME, status, new Error(errorCode, errorDescription));
+		throw new IntraleFunctionException(status, new Error(errorCode, errorDescription));
 	}
 	
 	public ResponseEntity<String> getResponseEntity(Exception exception) {
