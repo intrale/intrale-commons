@@ -10,20 +10,13 @@ import ar.com.intrale.in.IntraleFunctionException;
 
 public class NotEmptyCollectionValidator extends Validator {
 
-	private Collection<String> values;
-	
-	private NotEmptyCollectionValidator(String reference, ValueValidator valueValidator) {
-		//Dont use this constructor
+	public NotEmptyCollectionValidator(String reference, ValueValidator valueValidator) {
 		super(reference, valueValidator);
 	}
-	
-	public NotEmptyCollectionValidator(String reference, Collection<String> values) {
-		super(reference, null);
-		this.values = values;
-	}	
 
 	@Override
 	public void validate() throws BeansException, IntraleFunctionException  {
+		Collection values = (Collection) valueValidator.getValue();
 		if (values == null || values.size() <= 0 ) {
 			throwException();
 		} else {
