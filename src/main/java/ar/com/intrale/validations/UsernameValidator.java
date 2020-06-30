@@ -2,8 +2,8 @@ package ar.com.intrale.validations;
 
 public class UsernameValidator extends PatternValidator {
 
-	public UsernameValidator(String reference, String value) {
-		super(reference, value);
+	public UsernameValidator(String reference, ValueValidator valueValidator) {
+		super(reference, valueValidator);
 	}
 
 	@Override

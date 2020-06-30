@@ -2,8 +2,8 @@ package ar.com.intrale.validations;
 
 public class PasswordValidator extends PatternValidator {
 
-	public PasswordValidator(String reference, String value) {
-		super(reference, value);
+	public PasswordValidator(String reference, ValueValidator valueValidator) {
+		super(reference, valueValidator);
 	}
 
 	/**

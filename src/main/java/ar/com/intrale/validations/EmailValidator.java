@@ -2,8 +2,8 @@ package ar.com.intrale.validations;
 
 public class EmailValidator extends PatternValidator {
 
-	public EmailValidator(String reference, String value) {
-		super(reference, value);
+	public EmailValidator(String reference, ValueValidator valueValidator) {
+		super(reference, valueValidator);
 	}
 
 	@Override

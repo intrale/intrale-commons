@@ -13,8 +13,8 @@ public abstract class PatternValidator extends Validator {
 	private Pattern pattern;
 	private Matcher matcher;
 	
-	public PatternValidator(String reference, String value) {
-		super(reference, value);
+	public PatternValidator(String reference, ValueValidator valueValidator) {
+		super(reference, valueValidator);
 		pattern = Pattern.compile(getPattern());
 	}
 	
@@ -22,8 +22,8 @@ public abstract class PatternValidator extends Validator {
 
 	@Override
 	public void validate() throws BeansException, IntraleFunctionException {
-		if (!StringUtils.isEmpty(getReferenceValue())) {
-			matcher = pattern.matcher((String) getReferenceValue());
+		if (!StringUtils.isEmpty(valueValidator.getValue())) {
+			matcher = pattern.matcher((String) valueValidator.getValue());
 			if(!matcher.matches()) {
 				throwException();
 			} 

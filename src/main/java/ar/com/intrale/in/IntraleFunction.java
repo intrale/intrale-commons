@@ -41,7 +41,6 @@ public abstract class IntraleFunction <REQ extends Request, RES extends Response
 			REQ requestObject = (REQ) objectMapper.readValue(request, requestType);
 
 			if (requestObject!=null) {
-				requestObject.initialize(applicationContext);
 				requestObject.validate();
 				return new ResponseEntity<String>(objectMapper.writeValueAsString(function(requestObject)), HttpStatus.OK);
 			} else {

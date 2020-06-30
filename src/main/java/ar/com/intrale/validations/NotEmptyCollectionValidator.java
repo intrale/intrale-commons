@@ -12,9 +12,9 @@ public class NotEmptyCollectionValidator extends Validator {
 
 	private Collection<String> values;
 	
-	private NotEmptyCollectionValidator(String reference, String value) {
+	private NotEmptyCollectionValidator(String reference, ValueValidator valueValidator) {
 		//Dont use this constructor
-		super(reference, value);
+		super(reference, valueValidator);
 	}
 	
 	public NotEmptyCollectionValidator(String reference, Collection<String> values) {

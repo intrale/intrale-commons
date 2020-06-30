@@ -1,9 +1,6 @@
 package ar.com.intrale.validations;
 
-import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.NotReadablePropertyException;
-import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.http.HttpStatus;
 
 import ar.com.intrale.in.Error;
@@ -14,34 +11,17 @@ public abstract class Validator {
 	private static final String WHITE_SPACE = " ";
 	private static final String UNDERSCORE = "_";
 	private static final String FIELD = "field";
+	
 	protected String reference;
-	protected Object data;
 	
-	protected BeanWrapper beanWrapper;
+	protected ValueValidator valueValidator;
 	
-	public Validator(String reference, Object data) {
+	public Validator(String reference, ValueValidator valueValidator) {
 		this.reference = reference;
-		setData(data);
-	}
-
-	private void setData(Object data) {
-		this.data = data;
-		beanWrapper = PropertyAccessorFactory.forBeanPropertyAccess(data);
+		this.valueValidator = valueValidator;
 	}
 	
 	public abstract void validate()  throws BeansException, IntraleFunctionException;
-	
-	public Object getValue(String name) {
-		try {
-			return beanWrapper.getPropertyValue(name);
-		} catch(NotReadablePropertyException e) {
-			return null;
-		}
-	}
-	
-	public Object getReferenceValue() {
-		return getValue(reference);
-	}
 	
 	public String getErrorCode() {
 		StringBuilder errorCode = new StringBuilder();
