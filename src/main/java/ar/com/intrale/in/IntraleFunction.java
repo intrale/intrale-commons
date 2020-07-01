@@ -10,17 +10,18 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 
+import ar.com.intrale.Function;
 import ar.com.intrale.annotations.IOLogger;
 
-public abstract class IntraleFunction <REQ extends Request, RES extends Response> {
+public abstract class IntraleFunction <REQ extends Request, RES extends Response> implements Function{
 	
 	private static final String UNEXPECTED = "UNEXPECTED";
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(IntraleFunction.class);
-	
-	public static final String NAME = "INTRALE_FUNCTION";
 	
 	private final Class<REQ> requestType = (Class<REQ>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
 	
@@ -46,6 +47,12 @@ public abstract class IntraleFunction <REQ extends Request, RES extends Response
 			} else {
 				return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
 			}
+		} catch (MismatchedInputException e) {
+			return new IntraleFunctionException(HttpStatus.INTERNAL_SERVER_ERROR, 
+					new Error(BODY_PARSE_EXCEPTION, THE_BODY_JSON_COULD_NOT_BE_PARSED)).getResponseEntity();	
+		} catch (JsonParseException e) {
+			return new IntraleFunctionException(HttpStatus.INTERNAL_SERVER_ERROR, 
+					new Error(BODY_PARSE_EXCEPTION, THE_BODY_JSON_COULD_NOT_BE_PARSED)).getResponseEntity();	
 		} catch (IntraleFunctionException e) {
 			return e.getResponseEntity();		
 		} catch (Exception e) {

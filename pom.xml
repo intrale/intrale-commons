@@ -8,6 +8,26 @@
   </parent>
   
   <artifactId>Commons</artifactId>
+
+	<dependencies>
+
+		<dependency>
+			<groupId>ar.com.intrale.cloud</groupId>
+			<artifactId>Interfaces</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.nimbusds</groupId>
+			<artifactId>nimbus-jose-jwt</artifactId>
+			<version>8.16</version>
+		</dependency>
+		<dependency>
+			<groupId>com.amazonaws</groupId>
+			<artifactId>aws-lambda-java-log4j2</artifactId>
+			<version>1.2.0</version>
+		</dependency>
+
+	</dependencies>
   
     <repositories>
 		<repository>
@@ -22,16 +42,5 @@
 	     <url>https://maven.pkg.github.com/llarreta/intrale</url>
 	   </repository>
 	</distributionManagement>
-	<dependencies>
-		<dependency>
-			<groupId>com.nimbusds</groupId>
-			<artifactId>nimbus-jose-jwt</artifactId>
-			<version>8.16</version>
-		</dependency>
-		<dependency>
-			<groupId>com.amazonaws</groupId>
-			<artifactId>aws-lambda-java-log4j2</artifactId>
-			<version>1.2.0</version>
-		</dependency>
-	</dependencies>
+	
 </project>
