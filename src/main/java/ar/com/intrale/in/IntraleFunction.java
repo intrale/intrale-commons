@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.exc.MismatchedInputException;
+import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 
 import ar.com.intrale.Function;
 import ar.com.intrale.annotations.IOLogger;
@@ -47,6 +48,9 @@ public abstract class IntraleFunction <REQ extends Request, RES extends Response
 			} else {
 				return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
 			}
+		} catch (UnrecognizedPropertyException e) {
+			return new IntraleFunctionException(HttpStatus.BAD_REQUEST, 
+					new Error(BODY_PARSE_EXCEPTION, THE_BODY_JSON_CONTAIN_UNRECOGNIZED_PROPERTY)).getResponseEntity();		
 		} catch (MismatchedInputException e) {
 			return new IntraleFunctionException(HttpStatus.INTERNAL_SERVER_ERROR, 
 					new Error(BODY_PARSE_EXCEPTION, THE_BODY_JSON_COULD_NOT_BE_PARSED)).getResponseEntity();	
@@ -60,6 +64,8 @@ public abstract class IntraleFunction <REQ extends Request, RES extends Response
 		} finally {
 			LOGGER.debug("Fin ejecucion IntraleFunction");
 		}
+		
+		
 	}
 	
 	protected abstract RES function(REQ request)  throws BeansException, IntraleFunctionException ;
