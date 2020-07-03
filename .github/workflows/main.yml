@@ -15,8 +15,9 @@ jobs:
         java-version: 1.8
     - name: Deploy to Github Package Registry
       env:
-        SERVER_PASSWORD: ${{ secrets.SERVER_PASSWORD }}
+        MAVEN_SERVER_USERNAME: ${{ secrets.MAVEN_SERVER_USERNAME }}
+        MAVEN_SERVER_PASSWORD: ${{ secrets.MAVEN_SERVER_PASSWORD }}
       run: |
         mkdir -p ~/.m2
-        echo "<settings><servers><server><id>github</id><username>llarreta</username><password>${SERVER_PASSWORD}</password></server></servers></settings>" > ~/.m2/settings.xml
+        echo "<settings><servers><server><id>github</id><username>${MAVEN_SERVER_USERNAME}</username><password>${MAVEN_SERVER_PASSWORD}</password></server></servers></settings>" > ~/.m2/settings.xml
         mvn deploy
