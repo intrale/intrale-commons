@@ -1,9 +1,11 @@
-package ar.com.intrale.in;
+package ar.com.intrale.cloud;
 
 public class Error {
 
 	private String code;
 	private String description;
+	
+	public Error() {}
 	
 	public Error(String code, String description) {
 		this.code = code;

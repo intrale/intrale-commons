@@ -1,53 +1,60 @@
-package ar.com.intrale;
+package ar.com.intrale.cloud;
 
-import java.net.MalformedURLException;
-import java.net.URL;
+import javax.inject.Singleton;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
+import io.micronaut.context.annotation.Value;
 
-import com.nimbusds.jose.JWSAlgorithm;
-import com.nimbusds.jose.jwk.source.JWKSource;
-import com.nimbusds.jose.jwk.source.RemoteJWKSet;
-import com.nimbusds.jose.proc.JWSKeySelector;
-import com.nimbusds.jose.proc.JWSVerificationKeySelector;
-import com.nimbusds.jose.util.DefaultResourceRetriever;
-import com.nimbusds.jose.util.ResourceRetriever;
-import com.nimbusds.jwt.proc.ConfigurableJWTProcessor;
-import com.nimbusds.jwt.proc.DefaultJWTProcessor;
-
-@Configuration
-@PropertySource("classpath:AwsCredentials.properties")
-public class AWSConfiguration {
+@Singleton
+public class Config {
 	
 	private static final String COGNITO_URL_PREFIX = "https://cognito-idp.";
 	private static final String COGNITO_URL_MID = ".amazonaws.com/";
 	private static final String COGNITO_URL_SUFIX = "/.well-known/jwks.json";
 
-	@Value("${userPoolId}")
+	@Value("${aws.userPoolId}")
 	private String userPoolId;
 	
-	@Value("${region}")
+	@Value("${aws.region}")
 	private String region;
 	
-	@Value("${clientId}")
+	@Value("${aws.clientId}")
 	private String clientId;
 	
-	@Value("${connectionTimeout:2000}")
-	private Integer connectionTimeout;
+	//@Value("${aws.connectionTimeout:2000}")
+	//private Integer connectionTimeout;
 	
-	@Value("${readTimeout:2000}")
-	private Integer readTimeout;
+	//@Value("${aws.readTimeout:2000}")
+	//private Integer readTimeout;
 	
-	public String getUserPoolIdUrl() {
+	@Value("${aws.cognito.accessKey}")
+	private String cognitoAccessKey;
+	
+	@Value("${aws.cognito.secretKey}")
+	private String cognitoSecretKey;
+	
+	public String getCognitoAccessKey() {
+		return cognitoAccessKey;
+	}
+
+	public void setCognitoAccessKey(String cognitoAccessKey) {
+		this.cognitoAccessKey = cognitoAccessKey;
+	}
+
+	public String getCognitoSecretKey() {
+		return cognitoSecretKey;
+	}
+
+	public void setCognitoSecretKey(String cognitoSecretKey) {
+		this.cognitoSecretKey = cognitoSecretKey;
+	}
+
+	/*public String getUserPoolIdUrl() {
 		StringBuilder jwtUrl = new StringBuilder();
 		jwtUrl.append(COGNITO_URL_PREFIX).append(region).append(COGNITO_URL_MID).append(userPoolId);
 		return jwtUrl.toString();
-	}
+	}*/
 	
-	@Bean
+	/*@Bean
 	public ConfigurableJWTProcessor JWTProcessor() throws MalformedURLException {
 
 		ResourceRetriever resourceRetriever = new DefaultResourceRetriever(connectionTimeout, readTimeout);
@@ -65,32 +72,34 @@ public class AWSConfiguration {
 	    ConfigurableJWTProcessor processor = new DefaultJWTProcessor();
 	    processor.setJWSKeySelector(keySelector);
 	    return processor;
-	}
+	}*/
 
-	public Integer getConnectionTimeout() {
+	/*public Integer getConnectionTimeout() {
 		return connectionTimeout;
 	}
 	public void setConnectionTimeout(Integer connectionTimeout) {
 		this.connectionTimeout = connectionTimeout;
-	}
-	public Integer getReadTimeout() {
+	}*/
+	/*public Integer getReadTimeout() {
 		return readTimeout;
 	}
 	public void setReadTimeout(Integer readTimeout) {
 		this.readTimeout = readTimeout;
-	}
+	}*/
 	public String getClientId() {
 		return clientId;
 	}
 	public void setClientId(String clientId) {
 		this.clientId = clientId;
 	}
+	
 	public String getUserPoolId() {
 		return userPoolId;
 	}
 	public void setUserPoolId(String userPoolId) {
 		this.userPoolId = userPoolId;
 	}
+	
 	public String getRegion() {
 		return region;
 	}
@@ -98,6 +107,6 @@ public class AWSConfiguration {
 		this.region = region;
 	}
 	
-	
+
 }
 
