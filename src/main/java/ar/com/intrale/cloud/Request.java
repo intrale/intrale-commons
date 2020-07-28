@@ -1,0 +1,5 @@
+package ar.com.intrale.cloud;
+
+public class Request {
+	
+}
