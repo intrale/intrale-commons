@@ -114,13 +114,6 @@
 		<version>3.4.0</version>
 		<scope>test</scope>
 	</dependency>
-	<!-- dependency>
-	    <groupId>io.micronaut.test</groupId>
-	    <artifactId>micronaut-test-spock</artifactId>
-	    <scope>test</scope>
-	</dependency-->
-
-
 
 	<dependency>
 		<groupId>com.amazonaws</groupId>
