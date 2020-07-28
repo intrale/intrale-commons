@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>ar.com.intrale.cloud</groupId>
   <artifactId>Commons</artifactId>
-  <version>0.1.2</version>
+  <version>0.2-SNAPSHOT</version>
 
   <parent>
     <groupId>io.micronaut</groupId>
@@ -47,6 +47,7 @@
 	  <url>https://maven.pkg.github.com/llarreta/intrale</url>
 	</repository>
   </distributionManagement>
+  
   <dependencies>
     <dependency>
       <groupId>io.micronaut</groupId>
