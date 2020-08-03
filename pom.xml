@@ -189,7 +189,7 @@
           </annotationProcessorPaths>
           <compilerArgs>
             <arg>-Amicronaut.processing.group=ar.com.intrale.cloud</arg>
-            <arg>-Amicronaut.processing.module=MicronautTest</arg>
+            <arg>-Amicronaut.processing.module=IntraleFunction</arg>
           </compilerArgs>
         </configuration>
         <executions>
