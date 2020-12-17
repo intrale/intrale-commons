@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>ar.com.intrale.cloud</groupId>
   <artifactId>Commons</artifactId>
-  <version>0.1.3-SNAPSHOT</version>
+  <version>0.1</version>
 
   <parent>
     <groupId>io.micronaut</groupId>
@@ -28,6 +28,8 @@
     
     <aws-lambda-java-events.version>3.1.0</aws-lambda-java-events.version>
   
+  	<cognito.adminAccessKey>${env.COGNITO_ADMIN_ACCESS_KEY}</cognito.adminAccessKey>
+	<cognito.adminSecretKey>${env.COGNITO_ADMIN_SECRET_KEY}</cognito.adminSecretKey>    
   </properties>
 
   <repositories>
