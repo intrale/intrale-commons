@@ -31,7 +31,9 @@ public abstract class FunctionException extends java.lang.Exception {
 
 	public HttpResponse<String> getResponse(){
 		try {
-			return HttpResponseFactory.INSTANCE.status(getHttpStatus()).body(objectMapper.writeValueAsString(errors));
+			FunctionExceptionResponse response = new FunctionExceptionResponse(errors);
+			response.setStatusCode(getHttpStatus().getCode());
+			return HttpResponseFactory.INSTANCE.status(getHttpStatus()).body(objectMapper.writeValueAsString(response));
 		} catch (JsonProcessingException e) {
 			return HttpResponseFactory.INSTANCE.status(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
 		}
