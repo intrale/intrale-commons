@@ -17,7 +17,7 @@ public class Config {
 	@Value("${aws.region}")
 	private String region;
 	
-	@Value("${aws.clientId}")
+	@Value("${aws.clientId}" )
 	private String clientId;
 	
 	//@Value("${aws.connectionTimeout:2000}")
@@ -29,7 +29,7 @@ public class Config {
 	@Value("${aws.cognito.accessKey}")
 	private String cognitoAccessKey;
 	
-	@Value("${aws.cognito.secretKey}")
+	@Value("${aws.cognito.secretKey:}")
 	private String cognitoSecretKey;
 	
 	public String getCognitoAccessKey() {

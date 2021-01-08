@@ -17,7 +17,7 @@ import io.micronaut.http.annotation.Post;
 import io.micronaut.scheduling.annotation.Scheduled;
 
 @Controller("/")
-@Requires(property = "env", value = "microservice")
+@Requires(  env = {"local", "test"} )
 public class MicroService {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(MicroService.class);
