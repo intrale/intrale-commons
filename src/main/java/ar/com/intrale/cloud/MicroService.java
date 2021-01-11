@@ -17,7 +17,7 @@ import io.micronaut.http.annotation.Post;
 import io.micronaut.scheduling.annotation.Scheduled;
 
 @Controller("/")
-@Requires(  env = {"local", "test"} )
+@Requires( condition = MicroServiceCondition.class )
 public class MicroService {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(MicroService.class);
@@ -35,6 +35,10 @@ public class MicroService {
 	private Long maxInactivity;
 	
 	private Long lastExecution = System.currentTimeMillis();
+	
+	public MicroService () {
+		LOGGER.debug("Creando MicroService");
+	}
 	
 	@Post()
 	public HttpResponse<String> post (@Body String request) {
