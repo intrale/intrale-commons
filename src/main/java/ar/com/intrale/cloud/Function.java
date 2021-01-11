@@ -35,24 +35,28 @@ public abstract class Function<REQ extends Request, RES extends Response> implem
 	@Override
 	public HttpResponse<String> apply(String request) {
 		
-    	LOGGER.info("iniciando funcion");
-    	
+    	LOGGER.info("INTRALE: iniciando funcion");
+    	LOGGER.info("INTRALE: request => \n" + request);
     	try {
-    		Response response = new Response();
     		REQ requestObject = (REQ) builder.build(request, requestType);
 	    	
 	    	if (StringUtils.isEmpty(request)) {
 	    		return HttpResponse.badRequest();
 	    	}
 	    	
-	    	return HttpResponse.ok().body(objectMapper.writeValueAsString(execute(requestObject)));
+	    	return logResponse(HttpResponse.ok().body(objectMapper.writeValueAsString(execute(requestObject))));
 		} catch (FunctionException e) {
-			return e.getResponse();
+			return logResponse(e.getResponse());
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage());
 		}
-		return HttpResponse.serverError();
+		return logResponse(HttpResponse.serverError());
         
+	}
+
+	private HttpResponse<String> logResponse(HttpResponse<String> response) {
+		LOGGER.info("INTRALE: response => \n" + response.body());
+		return response;
 	}
 	
 	public abstract RES execute (REQ request) throws FunctionException;
