@@ -44,7 +44,10 @@ public abstract class Function<REQ extends Request, RES extends Response> implem
 	    		return HttpResponse.badRequest();
 	    	}
 	    	
-	    	return logResponse(HttpResponse.ok().body(objectMapper.writeValueAsString(execute(requestObject))));
+	    	RES res = execute(requestObject);
+	    	res.setStatusCode(200);
+	    	
+	    	return logResponse(HttpResponse.ok().body(objectMapper.writeValueAsString(res)));
 		} catch (FunctionException e) {
 			return logResponse(e.getResponse());
 		} catch (Exception e) {
@@ -54,6 +57,7 @@ public abstract class Function<REQ extends Request, RES extends Response> implem
         
 	}
 
+	
 	private HttpResponse<String> logResponse(HttpResponse<String> response) {
 		LOGGER.info("INTRALE: response => \n" + response.body());
 		return response;
