@@ -20,9 +20,6 @@ public abstract class Function<REQ extends Request, RES extends Response> implem
 	
 	private final Class<Request> requestType = (Class<Request>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
 	
-	@Inject
-	protected Config config;
-
    	@Inject
    	protected Validator validator;
 	

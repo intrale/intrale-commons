@@ -11,9 +11,7 @@ public class MicroServiceCondition implements Condition{
 	public boolean matches(ConditionContext context) {
 		Optional<String> microservices = context.getProperty("micronaut.application.microservices", String.class);
 		
-		System.out.println("microservices:" + microservices.get());
 		Boolean microservicesValue =  Boolean.valueOf(microservices.get());
-		System.out.println("microservicesValue:" + microservicesValue);
 		return microservicesValue;
 	}
 
