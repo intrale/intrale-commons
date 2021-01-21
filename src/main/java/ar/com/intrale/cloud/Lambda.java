@@ -31,7 +31,11 @@ public class Lambda extends MicronautRequestHandler<APIGatewayProxyRequestEvent,
 	@Inject
 	protected Function function;
 
-    @Override
+    public void setFunction(Function function) {
+		this.function = function;
+	}
+
+	@Override
     public APIGatewayProxyResponseEvent execute(APIGatewayProxyRequestEvent request) {
  
     	HttpResponse<String> response =  (HttpResponse<String>) function.apply(request.getBody());

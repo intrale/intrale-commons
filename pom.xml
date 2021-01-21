@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>ar.com.intrale.cloud</groupId>
   <artifactId>commons</artifactId>
-  <version>0.1.9</version> 
+  <version>0.1.10</version> 
 
   <parent>
     <groupId>io.micronaut</groupId>
@@ -236,7 +236,7 @@
 					</goals>
 				</execution>
 				<!-- Add this checking -->
-				<execution>
+				<!-- execution>
 					<id>jacoco-check</id>
 					<goals>
 						<goal>check</goal>
@@ -258,7 +258,7 @@
 					  </rule>
 					</rules>
 					</configuration>
-				</execution>
+				</execution -->
 			</executions>
 		</plugin>
     </plugins>

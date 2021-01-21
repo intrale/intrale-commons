@@ -5,7 +5,6 @@ import java.util.Collection;
 
 import io.micronaut.core.annotation.Introspected;
 
-//@Introspected
 public class FunctionExceptionResponse extends Response {
 	
 	private Collection<Error> errors = new ArrayList<Error>();
@@ -23,7 +22,6 @@ public class FunctionExceptionResponse extends Response {
 	public void setErrors(Collection<Error> errors) {
 		this.errors = errors;
 	}
-	
 	
 
 }
