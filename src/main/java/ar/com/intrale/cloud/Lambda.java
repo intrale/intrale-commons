@@ -11,7 +11,6 @@ import org.slf4j.LoggerFactory;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 
-import io.micronaut.context.ApplicationContext;
 import io.micronaut.core.annotation.Introspected;
 import io.micronaut.function.aws.MicronautRequestHandler;
 import io.micronaut.http.HttpResponse;
@@ -30,15 +29,11 @@ public class Lambda extends MicronautRequestHandler<APIGatewayProxyRequestEvent,
 	private static final Logger LOGGER = LoggerFactory.getLogger(Lambda.class);
 	
 	@Inject
-	protected ApplicationContext applicationContext;
-	
-	@Inject
 	protected Function function;
 	
 	@PostConstruct
 	public void postConstruct() {
 		LOGGER.debug("postConstruct");
-		//function = applicationContext.getBean(Function.class);
 	}
 	
 	@Override
