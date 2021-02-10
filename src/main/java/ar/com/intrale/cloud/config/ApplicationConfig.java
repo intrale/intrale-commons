@@ -21,6 +21,14 @@ public class ApplicationConfig {
 	@ConfigurationBuilder("database")
 	protected DatabaseConfig database = new DatabaseConfig();
 
+	public DatabaseConfig getDatabase() {
+		return database;
+	}
+
+	public void setDatabase(DatabaseConfig database) {
+		this.database = database;
+	}
+
 	public String getName() {
 		return name;
 	}
