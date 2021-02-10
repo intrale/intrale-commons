@@ -28,10 +28,10 @@ public class MicroService {
 	@Inject
 	private ApplicationContext context;
 	
-	@Value("${activity.validate.enabled}")
+	@Value("${app.activity.enabled}")
 	private Boolean activityValidateEnabled;
 	
-	@Value("${activity.validate.maxInactivity}")
+	@Value("${app.activity.maxInactivity}")
 	private Long maxInactivity;
 	
 	private Long lastExecution = System.currentTimeMillis();
@@ -46,7 +46,7 @@ public class MicroService {
 		return (HttpResponse<String>) function.apply(request);
 	}
 	
-	@Scheduled(fixedDelay = "${activity.validate.fixedDelay}", initialDelay = "${activity.validate.initialDelay}")
+	@Scheduled(fixedDelay = "${app.activity.fixedDelay}", initialDelay = "${app.activity.initialDelay}")
 	public void activityValidate() {
 		LOGGER.debug("ejecutando activityValidate");
 		Long actualInactivity = System.currentTimeMillis() - lastExecution;

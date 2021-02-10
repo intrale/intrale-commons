@@ -9,7 +9,7 @@ public class MicroServiceCondition implements Condition{
 
 	@Override
 	public boolean matches(ConditionContext context) {
-		Optional<String> microservices = context.getProperty("micronaut.application.microservices", String.class);
+		Optional<String> microservices = context.getProperty("app.microservices", String.class);
 		
 		Boolean microservicesValue =  Boolean.valueOf(microservices.get());
 		return microservicesValue;
