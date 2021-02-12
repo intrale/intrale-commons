@@ -1,6 +1,6 @@
 package ar.com.intrale.cloud.config;
 
-public class DatabaseConfig {
+public class CredentialsConfig {
 	
 	private String access;
 	private String secret;

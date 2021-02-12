@@ -19,13 +19,25 @@ public class ApplicationConfig {
 	protected AWSConfig aws = new AWSConfig();
 	
 	@ConfigurationBuilder("database")
-	protected DatabaseConfig database = new DatabaseConfig();
+	protected CredentialsConfig database = new CredentialsConfig();
+	
+	@ConfigurationBuilder("cognito")
+	protected CredentialsConfig cognito = new CredentialsConfig();
+	
 
-	public DatabaseConfig getDatabase() {
+	public CredentialsConfig getCognito() {
+		return cognito;
+	}
+
+	public void setCognito(CredentialsConfig cognito) {
+		this.cognito = cognito;
+	}
+
+	public CredentialsConfig getDatabase() {
 		return database;
 	}
 
-	public void setDatabase(DatabaseConfig database) {
+	public void setDatabase(CredentialsConfig database) {
 		this.database = database;
 	}
 

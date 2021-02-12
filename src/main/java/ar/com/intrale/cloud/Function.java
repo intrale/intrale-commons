@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import ar.com.intrale.cloud.config.ApplicationConfig;
 import io.micronaut.context.ApplicationContext;
 import io.micronaut.core.util.StringUtils;
 import io.micronaut.http.HttpResponse;
@@ -25,7 +26,7 @@ import io.micronaut.validation.validator.Validator;
 
 public abstract class Function<REQ extends Request, RES extends Response, PROV> implements java.util.function.Function<String, HttpResponse<String>> {
 	
-	private static final Logger LOGGER = LoggerFactory.getLogger(Function.class);
+	protected static final Logger LOGGER = LoggerFactory.getLogger(Function.class);
 	
 	private final Class<Request> requestType = (Class<Request>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
 	private final Class<Request> providerType = (Class<Request>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[2];
@@ -41,6 +42,12 @@ public abstract class Function<REQ extends Request, RES extends Response, PROV> 
    	
    	protected PROV provider;
    	
+	@Inject
+	protected ApplicationConfig config;
+   	
+	public ApplicationConfig getConfig() {
+		return config;
+	}
 
 	@PostConstruct
     public Boolean postConstruct() {
