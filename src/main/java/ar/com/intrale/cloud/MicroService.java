@@ -10,10 +10,13 @@ import org.slf4j.LoggerFactory;
 import ar.com.intrale.cloud.config.ApplicationConfig;
 import io.micronaut.context.ApplicationContext;
 import io.micronaut.context.annotation.Requires;
+import io.micronaut.core.util.StringUtils;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.annotation.Body;
 import io.micronaut.http.annotation.Controller;
+import io.micronaut.http.annotation.Header;
 import io.micronaut.http.annotation.Post;
+import io.micronaut.inject.qualifiers.Qualifiers;
 import io.micronaut.scheduling.annotation.Scheduled;
 
 @Controller("/")
@@ -22,11 +25,10 @@ public class MicroService {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(MicroService.class);
 	
-	@Inject
 	private Function function;
 	
 	@Inject
-	private ApplicationContext context;
+	private ApplicationContext applicationContext;
 	
 	@Inject
 	private ApplicationConfig config;
@@ -38,8 +40,16 @@ public class MicroService {
 	}
 	
 	@Post()
-	public HttpResponse<String> post (@Body String request) {
+	public HttpResponse<String> post (@Header(Lambda.FUNCTION) String functionName, @Body String request) {
 		lastExecution = System.currentTimeMillis();
+		
+		//Instanciar Function
+		if (!StringUtils.isEmpty(functionName)) {
+			function = applicationContext.getBean(Function.class, Qualifiers.byName(functionName.toUpperCase()));
+		} else {
+			function = applicationContext.getBean(Function.class);
+		}
+		
 		return (HttpResponse<String>) function.apply(request);
 	}
 	
@@ -49,7 +59,7 @@ public class MicroService {
 		Long actualInactivity = System.currentTimeMillis() - lastExecution;
 		LOGGER.debug("Actual inactivity:" + actualInactivity + ", maxInactivity:" + config.getActivity().getMaxInactivity());
 		if (config.getActivity().getEnabled() && (config.getActivity().getMaxInactivity() < actualInactivity)) {
-			context.stop();
+			applicationContext.stop();
 			System.exit(1);
 		}
 	}

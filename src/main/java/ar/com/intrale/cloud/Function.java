@@ -26,6 +26,11 @@ import io.micronaut.validation.validator.Validator;
 
 public abstract class Function<REQ extends Request, RES extends Response, PROV> implements java.util.function.Function<String, HttpResponse<String>> {
 	
+	public static final String CREATE = "CREATE";
+	public static final String READ = "READ";
+	public static final String UPDATE = "UPDATE";
+	public static final String DELETE = "DELETE";
+	
 	protected static final Logger LOGGER = LoggerFactory.getLogger(Function.class);
 	
 	private final Class<Request> requestType = (Class<Request>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];

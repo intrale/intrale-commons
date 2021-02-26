@@ -11,13 +11,18 @@ import org.slf4j.LoggerFactory;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 
+import io.micronaut.context.ApplicationContext;
 import io.micronaut.core.annotation.Introspected;
+import io.micronaut.core.util.StringUtils;
 import io.micronaut.function.aws.MicronautRequestHandler;
 import io.micronaut.http.HttpResponse;
+import io.micronaut.inject.qualifiers.Qualifiers;
 
 @Introspected
 public class Lambda extends MicronautRequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
 	
+	public static final String FUNCTION = "function";
+
 	public static final String ALL = "*";
 
 	public static final String GET_OPTIONS_HEAD_PUT_POST = "GET, OPTIONS, HEAD, PUT, POST";
@@ -28,8 +33,10 @@ public class Lambda extends MicronautRequestHandler<APIGatewayProxyRequestEvent,
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(Lambda.class);
 	
-	@Inject
 	protected Function function;
+	
+   	@Inject
+   	protected ApplicationContext applicationContext;
 	
 	@PostConstruct
 	public void postConstruct() {
@@ -38,6 +45,18 @@ public class Lambda extends MicronautRequestHandler<APIGatewayProxyRequestEvent,
 	
 	@Override
     public APIGatewayProxyResponseEvent execute(APIGatewayProxyRequestEvent request) {
+		
+		//Instanciar Function
+		String functionName = StringUtils.EMPTY_STRING;
+		if (request.getHeaders()!=null) {
+			functionName = request.getHeaders().get(FUNCTION); 
+		}
+		if (!StringUtils.isEmpty(functionName)) {
+			function = applicationContext.getBean(Function.class, Qualifiers.byName(functionName.toUpperCase()));
+		} else {
+			function = applicationContext.getBean(Function.class);
+		}
+		
  
     	HttpResponse<String> response =  (HttpResponse<String>) function.apply(request.getBody());
     	
