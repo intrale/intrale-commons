@@ -8,7 +8,9 @@ public class Request {
     @NonNull
     @NotBlank
 	private String businessName;
-    
+
+    @NonNull
+    @NotBlank
     private String requestId;
 
 	@NonNull

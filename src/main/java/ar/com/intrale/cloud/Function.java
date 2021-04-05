@@ -26,6 +26,11 @@ import io.micronaut.validation.validator.Validator;
 
 public abstract class Function<REQ extends Request, RES extends Response, PROV> implements java.util.function.Function<String, HttpResponse<String>> {
 	
+    public static final String BUSINESS_NAME 	= "businessName";
+
+    public static final String NUMERAL = "#";
+    public static final String TWO_POINTS = ":";
+    
 	public static final String CREATE = "CREATE";
 	public static final String READ = "READ";
 	public static final String UPDATE = "UPDATE";
@@ -36,7 +41,7 @@ public abstract class Function<REQ extends Request, RES extends Response, PROV> 
 	private final Class<Request> requestType = (Class<Request>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
 	private final Class<Request> providerType = (Class<Request>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[2];
 	
-   	@Inject
+	@Inject
    	protected Validator validator;
 	
    	@Inject
@@ -49,7 +54,11 @@ public abstract class Function<REQ extends Request, RES extends Response, PROV> 
    	
 	@Inject
 	protected ApplicationConfig config;
-   	
+
+   	public Class<Request> getProviderType() {
+		return providerType;
+	}
+	
 	public ApplicationConfig getConfig() {
 		return config;
 	}
@@ -64,7 +73,7 @@ public abstract class Function<REQ extends Request, RES extends Response, PROV> 
 		}
 		return Boolean.TRUE;
     }
-   	
+	
 	@Override
 	public HttpResponse<String> apply(String request) {
 		
