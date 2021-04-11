@@ -12,6 +12,7 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 
 import io.micronaut.context.ApplicationContext;
+import io.micronaut.context.exceptions.NonUniqueBeanException;
 import io.micronaut.core.annotation.Introspected;
 import io.micronaut.core.util.StringUtils;
 import io.micronaut.function.aws.MicronautRequestHandler;
@@ -54,7 +55,13 @@ public class Lambda extends MicronautRequestHandler<APIGatewayProxyRequestEvent,
 		if (!StringUtils.isEmpty(functionName)) {
 			function = applicationContext.getBean(Function.class, Qualifiers.byName(functionName.toUpperCase()));
 		} else {
-			function = applicationContext.getBean(Function.class);
+			try {
+				function = applicationContext.getBean(Function.class);
+			} catch (NonUniqueBeanException e) {
+				// En caso de que no se haya definido una funcion en el header y existan mas de una funcion cadidata para ser instanciada
+				// se intentara instanciar por default el READ
+				function = applicationContext.getBean(Function.class, Qualifiers.byName(Function.READ));
+			}
 		}
 		
  
