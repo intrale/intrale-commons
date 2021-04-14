@@ -46,7 +46,6 @@ public class Lambda extends MicronautRequestHandler<APIGatewayProxyRequestEvent,
 	
 	@Override
     public APIGatewayProxyResponseEvent execute(APIGatewayProxyRequestEvent request) {
-		
 		//Instanciar Function
 		String functionName = StringUtils.EMPTY_STRING;
 		if (request.getHeaders()!=null) {
