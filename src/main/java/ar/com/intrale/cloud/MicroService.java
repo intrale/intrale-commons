@@ -40,7 +40,7 @@ public class MicroService {
 	}
 	
 	@Post()
-	public HttpResponse<String> post (@Header(Lambda.FUNCTION) String functionName, @Body String request) {
+	public HttpResponse<String> post (@Header(Lambda.HEADER_AUTHORIZATION) String authorization, @Header(Lambda.HEADER_FUNCTION) String functionName, @Body String request) {
 		lastExecution = System.currentTimeMillis();
 		
 		//Instanciar Function

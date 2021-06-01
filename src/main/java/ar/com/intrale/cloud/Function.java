@@ -4,6 +4,7 @@ import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
@@ -16,6 +17,8 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.nimbusds.jwt.JWTClaimsSet;
+import com.nimbusds.jwt.proc.BadJWTException;
 
 import ar.com.intrale.cloud.config.ApplicationConfig;
 import io.micronaut.context.ApplicationContext;
@@ -28,15 +31,18 @@ public abstract class Function<REQ extends Request, RES extends Response, PROV> 
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(Function.class);
 	
+	public static final String TRUE = "true";
+	public static final String APP_INSTANTIATE = "app.instantiate.";
+	
 	public static final String BUSINESS_NAME 	= "businessName";
 
     public static final String NUMERAL = "#";
     public static final String TWO_POINTS = ":";
     
-	public static final String CREATE = "CREATE";
-	public static final String READ = "READ";
-	public static final String UPDATE = "UPDATE";
-	public static final String DELETE = "DELETE";
+	public static final String CREATE = "create";
+	public static final String READ = "read";
+	public static final String UPDATE = "update";
+	public static final String DELETE = "delete";
 	
 	private final Class<Request> requestType = (Class<Request>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
 	private final Class<Request> providerType = (Class<Request>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[2];
@@ -144,4 +150,59 @@ public abstract class Function<REQ extends Request, RES extends Response, PROV> 
 		this.provider = provider;
 	}
 
+	// Segurizacion de la funcion
+	/**
+	 * Retorna verdadero si es necesario validar la seguridad para la funcion
+	 * @return
+	 */
+	public abstract Boolean getSecurityEnabled();
+	
+	public void validate (String authorization) {
+		/*if (getSecurityEnabled()) {
+			
+			if (authorization!=null){
+				String jwt = authorization.substring("Bearer ".length());
+				JWTClaimsSet claimsSet = null;
+				try {
+					claimsSet = processor.process(jwt, null);
+				} catch (BadJWTException e) {
+					if (e.getMessage().contains("Expired")) {
+						throwException(HttpStatus.UNAUTHORIZED, "TOKEN_EXPIRED");
+					}
+					throwException(HttpStatus.BAD_REQUEST, "BAD_TOKEN");
+				} catch (Exception e) {
+					throwException(HttpStatus.INTERNAL_SERVER_ERROR, "UNEXPECTED_EXCEPTION");
+				} 
+				
+				if ((!isCorrectUserPool(claimsSet)) || (!isCorrectTokenUse(claimsSet, "access"))) {
+					throwException(HttpStatus.UNAUTHORIZED, "INVALID_TOKEN");
+			    }
+				
+				// Validando si el usuario pertenece al grupo que tiene permitido ejecutar esta accion
+				List groups = (List) claimsSet.getClaims().get(COGNITO_GROUPS);
+				if ((groups==null) || (!groups.contains(group))) {
+					throwException(HttpStatus.UNAUTHORIZED, "UNAUTHORIZED");
+				}
+			} else {
+				throwException(HttpStatus.UNAUTHORIZED, "NOT_AUTHORIZATION_FOUND");
+			}
+			
+		}*/
+	}
+	
+	/*public void throwException(HttpStatus status, String description) throws BeansException, IntraleFunctionException {
+		throw new IntraleFunctionException (status, description);
+	}
+	
+	
+	
+	private boolean isCorrectUserPool(JWTClaimsSet claimsSet) {
+       return claimsSet.getIssuer().equals(config.getUserPoolIdUrl());
+	}
+	 
+	private boolean isCorrectTokenUse(JWTClaimsSet claimsSet, String tokenUseType) {
+	       return claimsSet.getClaim(TOKEN_USE).equals(tokenUseType);
+	}*/
+	
+	
 }

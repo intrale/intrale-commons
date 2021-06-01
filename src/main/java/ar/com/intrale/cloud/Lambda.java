@@ -22,7 +22,8 @@ import io.micronaut.inject.qualifiers.Qualifiers;
 @Introspected
 public class Lambda extends MicronautRequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
 	
-	public static final String FUNCTION = "function";
+	public static final String HEADER_FUNCTION = "function";
+	public static final String HEADER_AUTHORIZATION = "Authorization";
 
 	public static final String ALL = "*";
 
@@ -47,9 +48,12 @@ public class Lambda extends MicronautRequestHandler<APIGatewayProxyRequestEvent,
 	@Override
     public APIGatewayProxyResponseEvent execute(APIGatewayProxyRequestEvent request) {
 		//Instanciar Function
+		Map <String, String> headers = request.getHeaders();
 		String functionName = StringUtils.EMPTY_STRING;
-		if (request.getHeaders()!=null) {
-			functionName = request.getHeaders().get(FUNCTION); 
+		String authorization = StringUtils.EMPTY_STRING;
+		if (headers!=null) {
+			functionName = headers.get(HEADER_FUNCTION); 
+			authorization = headers.get(HEADER_AUTHORIZATION); 
 		}
 		if (!StringUtils.isEmpty(functionName)) {
 			function = applicationContext.getBean(Function.class, Qualifiers.byName(functionName.toUpperCase()));
@@ -57,7 +61,7 @@ public class Lambda extends MicronautRequestHandler<APIGatewayProxyRequestEvent,
 			try {
 				function = applicationContext.getBean(Function.class);
 			} catch (NonUniqueBeanException e) {
-				// En caso de que no se haya definido una funcion en el header y existan mas de una funcion cadidata para ser instanciada
+				// En caso de que no se haya definido una funcion en el header y existan mas de una funcion candidata para ser instanciada
 				// se intentara instanciar por default el READ
 				function = applicationContext.getBean(Function.class, Qualifiers.byName(Function.READ));
 			}
@@ -69,10 +73,10 @@ public class Lambda extends MicronautRequestHandler<APIGatewayProxyRequestEvent,
     	APIGatewayProxyResponseEvent responseEvent = new APIGatewayProxyResponseEvent();
     	
 		// CORS avaiable
-		Map<String, String> headers = new HashMap<String, String>();
-		headers.put(ACCESS_CONTROL_ALLOW_ORIGIN, ALL);
-		headers.put(ACCESS_CONTROL_ALLOW_METHODS, GET_OPTIONS_HEAD_PUT_POST);
-		responseEvent.setHeaders(headers); 
+		Map<String, String> responseHeaders = new HashMap<String, String>();
+		responseHeaders.put(ACCESS_CONTROL_ALLOW_ORIGIN, ALL);
+		responseHeaders.put(ACCESS_CONTROL_ALLOW_METHODS, GET_OPTIONS_HEAD_PUT_POST);
+		responseEvent.setHeaders(responseHeaders); 
 		
     	responseEvent.setStatusCode(response.getStatus().getCode());
     	responseEvent.setBody(response.body());
