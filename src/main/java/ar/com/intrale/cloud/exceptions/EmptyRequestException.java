@@ -1,7 +1,8 @@
-package ar.com.intrale.cloud;
+package ar.com.intrale.cloud.exceptions;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import ar.com.intrale.cloud.Error;
 import io.micronaut.http.HttpStatus;
 
 

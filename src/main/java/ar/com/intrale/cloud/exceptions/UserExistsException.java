@@ -1,9 +1,10 @@
-package ar.com.intrale.cloud;
+package ar.com.intrale.cloud.exceptions;
 
 import java.util.Collection;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import ar.com.intrale.cloud.Error;
 import io.micronaut.http.HttpStatus;
 
 public class UserExistsException extends FunctionException {

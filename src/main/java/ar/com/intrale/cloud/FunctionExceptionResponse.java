@@ -3,8 +3,6 @@ package ar.com.intrale.cloud;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import io.micronaut.core.annotation.Introspected;
-
 public class FunctionExceptionResponse extends Response {
 	
 	private Collection<Error> errors = new ArrayList<Error>();

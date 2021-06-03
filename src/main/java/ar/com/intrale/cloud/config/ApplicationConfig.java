@@ -22,14 +22,14 @@ public class ApplicationConfig {
 	protected CredentialsConfig database = new CredentialsConfig();
 	
 	@ConfigurationBuilder("cognito")
-	protected CredentialsConfig cognito = new CredentialsConfig();
+	protected CognitoConfig cognito = new CognitoConfig();
 	
 
-	public CredentialsConfig getCognito() {
+	public CognitoConfig getCognito() {
 		return cognito;
 	}
 
-	public void setCognito(CredentialsConfig cognito) {
+	public void setCognito(CognitoConfig cognito) {
 		this.cognito = cognito;
 	}
 

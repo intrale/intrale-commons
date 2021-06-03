@@ -1,4 +1,4 @@
-package ar.com.intrale.cloud;
+package ar.com.intrale.cloud.exceptions;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -6,6 +6,8 @@ import java.util.Collection;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import ar.com.intrale.cloud.Error;
+import ar.com.intrale.cloud.FunctionExceptionResponse;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.HttpResponseFactory;
 import io.micronaut.http.HttpStatus;

@@ -19,8 +19,14 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.proc.BadJWTException;
+import com.nimbusds.jwt.proc.ConfigurableJWTProcessor;
 
 import ar.com.intrale.cloud.config.ApplicationConfig;
+import ar.com.intrale.cloud.exceptions.BadRequestException;
+import ar.com.intrale.cloud.exceptions.EmptyRequestException;
+import ar.com.intrale.cloud.exceptions.FunctionException;
+import ar.com.intrale.cloud.exceptions.UnauthorizeExeption;
+import ar.com.intrale.cloud.exceptions.UnexpectedException;
 import io.micronaut.context.ApplicationContext;
 import io.micronaut.core.util.StringUtils;
 import io.micronaut.http.HttpResponse;
@@ -29,12 +35,38 @@ import io.micronaut.validation.validator.Validator;
 
 public abstract class Function<REQ extends Request, RES extends Response, PROV> implements java.util.function.Function<String, HttpResponse<String>> {
 	
+	public static final String NOT_AUTHORIZATION_FOUND = "NOT_AUTHORIZATION_FOUND";
+
+	public static final String UNAUTHORIZED = "UNAUTHORIZED";
+
+	public static final String INVALID_TOKEN = "INVALID_TOKEN";
+
+	public static final String ACCESS = "access";
+
+	public static final String UNEXPECTED_EXCEPTION = "UNEXPECTED_EXCEPTION";
+
+	public static final String BAD_TOKEN = "BAD_TOKEN";
+
+	public static final String TOKEN_EXPIRED = "TOKEN_EXPIRED";
+
+	public static final String UNEXPECTED = "UNEXPECTED";
+
+	public static final String EMPTY_REQUEST = "EMPTY_REQUEST";
+
+	public static final String EXPIRED = "Expired";
+
+	public static final String BEARER = "Bearer ";
+
 	private static final Logger LOGGER = LoggerFactory.getLogger(Function.class);
 	
 	public static final String TRUE = "true";
+	
 	public static final String APP_INSTANTIATE = "app.instantiate.";
 	
 	public static final String BUSINESS_NAME 	= "businessName";
+	
+	private static final String COGNITO_GROUPS = "cognito:groups";
+	private static final String TOKEN_USE = "token_use";
 
     public static final String NUMERAL = "#";
     public static final String TWO_POINTS = ":";
@@ -60,6 +92,9 @@ public abstract class Function<REQ extends Request, RES extends Response, PROV> 
    	
 	@Inject
 	protected ApplicationConfig config;
+	
+	@Inject
+	protected ConfigurableJWTProcessor processor;
 
    	public Class<Request> getProviderType() {
 		return providerType;
@@ -116,14 +151,14 @@ public abstract class Function<REQ extends Request, RES extends Response, PROV> 
 	
 	protected Request build(String request, Class<Request> requestType) throws FunctionException {  	
 		if (StringUtils.isEmpty(request)) {
-    		throw new EmptyRequestException(new Error("EMPTY_REQUEST", "EMPTY_REQUEST"), mapper);
+    		throw new EmptyRequestException(new Error(EMPTY_REQUEST, EMPTY_REQUEST), mapper);
     	}
     	
 		Request requestObject = null;
 		try {
 			requestObject = (Request) mapper.readValue(request, requestType);
 		} catch (JsonProcessingException e) {
-			throw new UnexpectedException(new Error("UNEXPECTED", e.getMessage()), mapper);
+			throw new UnexpectedException(new Error(UNEXPECTED, e.getMessage()), mapper);
 		}
 		
     	Collection<Error> errors = new ArrayList<Error>();
@@ -152,49 +187,45 @@ public abstract class Function<REQ extends Request, RES extends Response, PROV> 
 
 	// Segurizacion de la funcion
 	/**
-	 * Retorna verdadero si es necesario validar la seguridad para la funcion
+	 * Retorna el nombre del grupo que deberia tener el perfil de usuario que intenta ejecutar la funcion
 	 * @return
 	 */
-	public abstract Boolean getSecurityEnabled();
+	public String getFunctionGroup() {
+		return null;
+	}
 	
-	public void validate (String authorization) {
-		/*if (getSecurityEnabled()) {
-			
+	public void validate (String authorization) throws FunctionException {
+		if (!StringUtils.isEmpty(getFunctionGroup())) {
 			if (authorization!=null){
-				String jwt = authorization.substring("Bearer ".length());
+				String jwt = authorization.substring(BEARER.length());
 				JWTClaimsSet claimsSet = null;
 				try {
 					claimsSet = processor.process(jwt, null);
 				} catch (BadJWTException e) {
-					if (e.getMessage().contains("Expired")) {
-						throwException(HttpStatus.UNAUTHORIZED, "TOKEN_EXPIRED");
+					if (e.getMessage().contains(EXPIRED)) {
+						throw new UnauthorizeExeption(new Error(TOKEN_EXPIRED, TOKEN_EXPIRED), mapper);
 					}
-					throwException(HttpStatus.BAD_REQUEST, "BAD_TOKEN");
+					throw new BadRequestException(new Error(BAD_TOKEN, BAD_TOKEN), mapper);
 				} catch (Exception e) {
-					throwException(HttpStatus.INTERNAL_SERVER_ERROR, "UNEXPECTED_EXCEPTION");
+					throw new UnexpectedException(new Error(UNEXPECTED_EXCEPTION, UNEXPECTED_EXCEPTION), mapper);
 				} 
 				
-				if ((!isCorrectUserPool(claimsSet)) || (!isCorrectTokenUse(claimsSet, "access"))) {
-					throwException(HttpStatus.UNAUTHORIZED, "INVALID_TOKEN");
+				if ((!isCorrectUserPool(claimsSet)) || 
+						(!isCorrectTokenUse(claimsSet, ACCESS))) {
+					throw new UnauthorizeExeption(new Error(INVALID_TOKEN, INVALID_TOKEN), mapper);
 			    }
 				
 				// Validando si el usuario pertenece al grupo que tiene permitido ejecutar esta accion
 				List groups = (List) claimsSet.getClaims().get(COGNITO_GROUPS);
-				if ((groups==null) || (!groups.contains(group))) {
-					throwException(HttpStatus.UNAUTHORIZED, "UNAUTHORIZED");
+				if ((groups==null) || (!groups.contains(getFunctionGroup()))) {
+					throw new UnauthorizeExeption(new Error(UNAUTHORIZED, UNAUTHORIZED), mapper);
 				}
 			} else {
-				throwException(HttpStatus.UNAUTHORIZED, "NOT_AUTHORIZATION_FOUND");
+				throw new UnauthorizeExeption(new Error(NOT_AUTHORIZATION_FOUND, NOT_AUTHORIZATION_FOUND), mapper);
 			}
 			
-		}*/
+		}
 	}
-	
-	/*public void throwException(HttpStatus status, String description) throws BeansException, IntraleFunctionException {
-		throw new IntraleFunctionException (status, description);
-	}
-	
-	
 	
 	private boolean isCorrectUserPool(JWTClaimsSet claimsSet) {
        return claimsSet.getIssuer().equals(config.getUserPoolIdUrl());
@@ -202,7 +233,7 @@ public abstract class Function<REQ extends Request, RES extends Response, PROV> 
 	 
 	private boolean isCorrectTokenUse(JWTClaimsSet claimsSet, String tokenUseType) {
 	       return claimsSet.getClaim(TOKEN_USE).equals(tokenUseType);
-	}*/
+	}
 	
 	
 }
