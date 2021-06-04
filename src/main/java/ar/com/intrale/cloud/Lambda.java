@@ -66,9 +66,8 @@ public class Lambda extends MicronautRequestHandler<APIGatewayProxyRequestEvent,
 				function = applicationContext.getBean(Function.class, Qualifiers.byName(Function.READ));
 			}
 		}
-		
  
-    	HttpResponse<String> response =  (HttpResponse<String>) function.apply(request.getBody());
+    	HttpResponse<String> response =  (HttpResponse<String>) function.apply(authorization, request.getBody());
     	
     	APIGatewayProxyResponseEvent responseEvent = new APIGatewayProxyResponseEvent();
     	

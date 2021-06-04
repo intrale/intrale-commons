@@ -4,6 +4,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -24,6 +25,8 @@ import io.micronaut.context.annotation.Factory;
 @Factory
 public class BeanFactory {
 	
+	public static final String USER_POOL_ID_URL = "userPoolIdUrl";
+	
 	@Inject
 	protected ApplicationConfig config;
 
@@ -32,6 +35,7 @@ public class BeanFactory {
 		return new ObjectMapper();
 	}
 	
+	@Bean @Singleton @Named(USER_POOL_ID_URL)
 	public String getUserPoolIdUrl() {
 		StringBuilder jwtUrl = new StringBuilder();
 		jwtUrl.append(config.getCognito().getUrlPrefix());

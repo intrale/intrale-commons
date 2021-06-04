@@ -9,6 +9,7 @@ import java.util.Set;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.validation.ConstraintViolation;
 import javax.validation.groups.Default;
 
@@ -33,7 +34,7 @@ import io.micronaut.http.HttpResponse;
 import io.micronaut.validation.validator.Validator;
 
 
-public abstract class Function<REQ extends Request, RES extends Response, PROV> implements java.util.function.Function<String, HttpResponse<String>> {
+public abstract class Function<REQ extends Request, RES extends Response, PROV> {
 	
 	public static final String NOT_AUTHORIZATION_FOUND = "NOT_AUTHORIZATION_FOUND";
 
@@ -95,6 +96,9 @@ public abstract class Function<REQ extends Request, RES extends Response, PROV> 
 	
 	@Inject
 	protected ConfigurableJWTProcessor processor;
+	
+	@Inject @Named(BeanFactory.USER_POOL_ID_URL)
+	protected String userPoolIdUrl;
 
    	public Class<Request> getProviderType() {
 		return providerType;
@@ -115,12 +119,13 @@ public abstract class Function<REQ extends Request, RES extends Response, PROV> 
 		return Boolean.TRUE;
     }
 	
-	@Override
-	public HttpResponse<String> apply(String request) {
+	public HttpResponse<String> apply(String authorization, String request) {
 		
     	LOGGER.info("INTRALE: iniciando funcion");
     	LOGGER.info("INTRALE: request => \n" + request);
     	try {
+    		validate(authorization);
+    		
     		REQ requestObject = (REQ) build(request, requestType);
 	    	
 	    	if (StringUtils.isEmpty(request)) {
@@ -193,42 +198,55 @@ public abstract class Function<REQ extends Request, RES extends Response, PROV> 
 	public String getFunctionGroup() {
 		return null;
 	}
+
+	protected boolean isSecurityEnabled() {
+		return !StringUtils.isEmpty(getFunctionGroup());
+	}
 	
 	public void validate (String authorization) throws FunctionException {
-		if (!StringUtils.isEmpty(getFunctionGroup())) {
+		if (isSecurityEnabled()) {
 			if (authorization!=null){
-				String jwt = authorization.substring(BEARER.length());
-				JWTClaimsSet claimsSet = null;
-				try {
-					claimsSet = processor.process(jwt, null);
-				} catch (BadJWTException e) {
-					if (e.getMessage().contains(EXPIRED)) {
-						throw new UnauthorizeExeption(new Error(TOKEN_EXPIRED, TOKEN_EXPIRED), mapper);
-					}
-					throw new BadRequestException(new Error(BAD_TOKEN, BAD_TOKEN), mapper);
-				} catch (Exception e) {
-					throw new UnexpectedException(new Error(UNEXPECTED_EXCEPTION, UNEXPECTED_EXCEPTION), mapper);
-				} 
 				
-				if ((!isCorrectUserPool(claimsSet)) || 
-						(!isCorrectTokenUse(claimsSet, ACCESS))) {
-					throw new UnauthorizeExeption(new Error(INVALID_TOKEN, INVALID_TOKEN), mapper);
-			    }
+				JWTClaimsSet claimsSet = validateToken(authorization);
 				
 				// Validando si el usuario pertenece al grupo que tiene permitido ejecutar esta accion
 				List groups = (List) claimsSet.getClaims().get(COGNITO_GROUPS);
-				if ((groups==null) || (!groups.contains(getFunctionGroup()))) {
+				if  ((!StringUtils.isEmpty(getFunctionGroup())) &&
+						((groups==null) || (!groups.contains(getFunctionGroup())))){
 					throw new UnauthorizeExeption(new Error(UNAUTHORIZED, UNAUTHORIZED), mapper);
 				}
+				
 			} else {
 				throw new UnauthorizeExeption(new Error(NOT_AUTHORIZATION_FOUND, NOT_AUTHORIZATION_FOUND), mapper);
 			}
 			
 		}
 	}
+
+	private JWTClaimsSet validateToken(String authorization)
+			throws UnauthorizeExeption, BadRequestException, UnexpectedException {
+		String jwt = authorization.substring(BEARER.length());
+		JWTClaimsSet claimsSet = null;
+		try {
+			claimsSet = processor.process(jwt, null);
+		} catch (BadJWTException e) {
+			if (e.getMessage().contains(EXPIRED)) {
+				throw new UnauthorizeExeption(new Error(TOKEN_EXPIRED, TOKEN_EXPIRED), mapper);
+			}
+			throw new BadRequestException(new Error(BAD_TOKEN, BAD_TOKEN), mapper);
+		} catch (Exception e) {
+			throw new UnexpectedException(new Error(UNEXPECTED_EXCEPTION, UNEXPECTED_EXCEPTION), mapper);
+		} 
+		
+		if ((!isCorrectUserPool(claimsSet)) || 
+				(!isCorrectTokenUse(claimsSet, ACCESS))) {
+			throw new UnauthorizeExeption(new Error(INVALID_TOKEN, INVALID_TOKEN), mapper);
+		}
+		return claimsSet;
+	}
 	
 	private boolean isCorrectUserPool(JWTClaimsSet claimsSet) {
-       return claimsSet.getIssuer().equals(config.getUserPoolIdUrl());
+       return claimsSet.getIssuer().equals(userPoolIdUrl);
 	}
 	 
 	private boolean isCorrectTokenUse(JWTClaimsSet claimsSet, String tokenUseType) {

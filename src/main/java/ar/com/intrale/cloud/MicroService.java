@@ -1,7 +1,5 @@
 package ar.com.intrale.cloud;
 
-import java.util.function.Function;
-
 import javax.inject.Inject;
 
 import org.slf4j.Logger;
@@ -50,7 +48,7 @@ public class MicroService {
 			function = applicationContext.getBean(Function.class);
 		}
 		
-		return (HttpResponse<String>) function.apply(request);
+		return (HttpResponse<String>) function.apply(authorization, request);
 	}
 	
 	@Scheduled(fixedDelay = "${app.activity.fixedDelay:'30s'}", initialDelay = "${app.activity.initialDelay:'15s'}")
