@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
@@ -204,13 +205,14 @@ public abstract class Function<REQ extends Request, RES extends Response, PROV> 
 	}
 	
 	public void validate (String authorization) throws FunctionException {
+		LOGGER.info("INTRALE: inicio validate");
 		if (isSecurityEnabled()) {
 			if (authorization!=null){
 				
 				JWTClaimsSet claimsSet = validateToken(authorization);
 				
 				// Validando si el usuario pertenece al grupo que tiene permitido ejecutar esta accion
-				List groups = (List) claimsSet.getClaims().get(COGNITO_GROUPS);
+				List groups = getGroups(claimsSet);
 				if  ((!StringUtils.isEmpty(getFunctionGroup())) &&
 						((groups==null) || (!groups.contains(getFunctionGroup())))){
 					throw new UnauthorizeExeption(new Error(UNAUTHORIZED, UNAUTHORIZED), mapper);
@@ -221,27 +223,47 @@ public abstract class Function<REQ extends Request, RES extends Response, PROV> 
 			}
 			
 		}
+		LOGGER.info("INTRALE: fin validate");
+	}
+
+	protected List getGroups(JWTClaimsSet claimsSet) {
+		LOGGER.info("INTRALE: inicio getGroups");
+		Map<String, Object> claims = claimsSet.getClaims();
+		List groups = null;
+		if (claims!=null && claims.size()>0) {
+		 groups = (List) claimsSet.getClaims().get(COGNITO_GROUPS);
+		}
+		LOGGER.info("INTRALE: fin getGroups");
+		return groups;
 	}
 
 	private JWTClaimsSet validateToken(String authorization)
 			throws UnauthorizeExeption, BadRequestException, UnexpectedException {
+		LOGGER.info("INTRALE: inicio validateToken");
 		String jwt = authorization.substring(BEARER.length());
 		JWTClaimsSet claimsSet = null;
 		try {
 			claimsSet = processor.process(jwt, null);
 		} catch (BadJWTException e) {
 			if (e.getMessage().contains(EXPIRED)) {
+				LOGGER.info("INTRALE: token expired");
 				throw new UnauthorizeExeption(new Error(TOKEN_EXPIRED, TOKEN_EXPIRED), mapper);
 			}
+			LOGGER.info("INTRALE: bad token");
 			throw new BadRequestException(new Error(BAD_TOKEN, BAD_TOKEN), mapper);
 		} catch (Exception e) {
+			LOGGER.info("INTRALE: unexpected exception");
 			throw new UnexpectedException(new Error(UNEXPECTED_EXCEPTION, UNEXPECTED_EXCEPTION), mapper);
 		} 
 		
 		if ((!isCorrectUserPool(claimsSet)) || 
 				(!isCorrectTokenUse(claimsSet, ACCESS))) {
+			LOGGER.info("INTRALE: invalid token");
 			throw new UnauthorizeExeption(new Error(INVALID_TOKEN, INVALID_TOKEN), mapper);
 		}
+		
+		LOGGER.info("INTRALE: fin validateToken");
+		
 		return claimsSet;
 	}
 	
