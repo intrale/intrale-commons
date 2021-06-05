@@ -42,6 +42,8 @@ public class MicroService {
 		lastExecution = System.currentTimeMillis();
 		
 		//Instanciar Function
+		LOGGER.info("INTRALE: functionName => " + functionName);
+		LOGGER.info("INTRALE: authorization => " + authorization);
 		if (!StringUtils.isEmpty(functionName)) {
 			function = applicationContext.getBean(Function.class, Qualifiers.byName(functionName.toUpperCase()));
 		} else {
