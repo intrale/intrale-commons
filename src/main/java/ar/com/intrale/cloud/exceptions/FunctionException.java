@@ -1,5 +1,7 @@
 package ar.com.intrale.cloud.exceptions;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -39,6 +41,18 @@ public abstract class FunctionException extends java.lang.Exception {
 		} catch (JsonProcessingException e) {
 			return HttpResponseFactory.INSTANCE.status(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
 		}
+	}
+	
+	/**
+	 * Retorna el stack de la exception en formato string
+	 * @param e
+	 * @return
+	 */
+	public static String toString(Throwable e) {
+		StringWriter stringWriter = new StringWriter();
+		PrintWriter printWriter = new PrintWriter(stringWriter);
+		e.printStackTrace(printWriter);
+		return stringWriter.toString();
 	}
 	
 }

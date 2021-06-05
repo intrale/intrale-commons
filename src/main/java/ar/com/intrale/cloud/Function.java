@@ -1,5 +1,7 @@
 package ar.com.intrale.cloud;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -140,7 +142,7 @@ public abstract class Function<REQ extends Request, RES extends Response, PROV> 
 		} catch (FunctionException e) {
 			return logResponse(e.getResponse());
 		} catch (Exception e) {
-			LOGGER.error(e.getMessage());
+			LOGGER.error(FunctionException.toString(e));
 		}
 		return logResponse(HttpResponse.serverError());
         
