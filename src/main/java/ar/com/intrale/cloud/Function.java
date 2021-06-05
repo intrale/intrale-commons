@@ -1,7 +1,5 @@
 package ar.com.intrale.cloud;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -29,6 +27,7 @@ import ar.com.intrale.cloud.config.ApplicationConfig;
 import ar.com.intrale.cloud.exceptions.BadRequestException;
 import ar.com.intrale.cloud.exceptions.EmptyRequestException;
 import ar.com.intrale.cloud.exceptions.FunctionException;
+import ar.com.intrale.cloud.exceptions.TokenNotFoundException;
 import ar.com.intrale.cloud.exceptions.UnauthorizeExeption;
 import ar.com.intrale.cloud.exceptions.UnexpectedException;
 import io.micronaut.context.ApplicationContext;
@@ -39,6 +38,8 @@ import io.micronaut.validation.validator.Validator;
 
 public abstract class Function<REQ extends Request, RES extends Response, PROV> {
 	
+	public static final String TOKEN_NOT_FOUND = "TOKEN_NOT_FOUND";
+
 	public static final String NOT_AUTHORIZATION_FOUND = "NOT_AUTHORIZATION_FOUND";
 
 	public static final String UNAUTHORIZED = "UNAUTHORIZED";
@@ -240,8 +241,11 @@ public abstract class Function<REQ extends Request, RES extends Response, PROV> 
 	}
 
 	private JWTClaimsSet validateToken(String authorization)
-			throws UnauthorizeExeption, BadRequestException, UnexpectedException {
+			throws FunctionException {
 		LOGGER.info("INTRALE: inicio validateToken");
+		if (StringUtils.isEmpty(authorization)) {
+			throw new TokenNotFoundException(new Error(TOKEN_NOT_FOUND, TOKEN_NOT_FOUND), mapper);
+		}
 		String jwt = authorization.substring(BEARER.length());
 		JWTClaimsSet claimsSet = null;
 		try {
