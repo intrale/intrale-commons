@@ -214,12 +214,16 @@ public abstract class Function<REQ extends Request, RES extends Response, PROV> 
 				
 				JWTClaimsSet claimsSet = validateToken(authorization);
 				
+				//TODO: Validar que el usuario este registrado para la organizacion / negocio que desea ejecutar la funcion
+				
 				// Validando si el usuario pertenece al grupo que tiene permitido ejecutar esta accion
 				List groups = getGroups(claimsSet);
 				if  ((!StringUtils.isEmpty(getFunctionGroup())) &&
 						((groups==null) || (!groups.contains(getFunctionGroup())))){
 					throw new UnauthorizeExeption(new Error(UNAUTHORIZED, UNAUTHORIZED), mapper);
 				}
+				
+				
 				
 			} else {
 				throw new UnauthorizeExeption(new Error(NOT_AUTHORIZATION_FOUND, NOT_AUTHORIZATION_FOUND), mapper);
@@ -232,6 +236,11 @@ public abstract class Function<REQ extends Request, RES extends Response, PROV> 
 	protected List getGroups(JWTClaimsSet claimsSet) {
 		LOGGER.info("INTRALE: inicio getGroups");
 		Map<String, Object> claims = claimsSet.getClaims();
+		
+		String username = (String) claims.get("username");
+		
+		LOGGER.info("INTRALE: username on token:" + username);
+		
 		List groups = null;
 		if (claims!=null && claims.size()>0) {
 		 groups = (List) claimsSet.getClaims().get(COGNITO_GROUPS);
@@ -258,7 +267,9 @@ public abstract class Function<REQ extends Request, RES extends Response, PROV> 
 			LOGGER.info("INTRALE: bad token");
 			throw new BadRequestException(new Error(BAD_TOKEN, BAD_TOKEN), mapper);
 		} catch (Exception e) {
-			LOGGER.info("INTRALE: unexpected exception");
+			LOGGER.error("INTRALE: unexpected exception");
+			LOGGER.error("INTRALE: authorization:" + authorization);
+			LOGGER.error(FunctionException.toString(e));
 			throw new UnexpectedException(new Error(UNEXPECTED_EXCEPTION, UNEXPECTED_EXCEPTION), mapper);
 		} 
 		
