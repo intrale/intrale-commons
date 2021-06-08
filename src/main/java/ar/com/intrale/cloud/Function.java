@@ -215,6 +215,9 @@ public abstract class Function<REQ extends Request, RES extends Response, PROV> 
 				JWTClaimsSet claimsSet = validateToken(authorization);
 				
 				//TODO: Validar que el usuario este registrado para la organizacion / negocio que desea ejecutar la funcion
+				String username = (String) claimsSet.getClaims().get("username");
+				
+				LOGGER.info("INTRALE: username on token:" + username);
 				
 				// Validando si el usuario pertenece al grupo que tiene permitido ejecutar esta accion
 				List groups = getGroups(claimsSet);
@@ -222,8 +225,6 @@ public abstract class Function<REQ extends Request, RES extends Response, PROV> 
 						((groups==null) || (!groups.contains(getFunctionGroup())))){
 					throw new UnauthorizeExeption(new Error(UNAUTHORIZED, UNAUTHORIZED), mapper);
 				}
-				
-				
 				
 			} else {
 				throw new UnauthorizeExeption(new Error(NOT_AUTHORIZATION_FOUND, NOT_AUTHORIZATION_FOUND), mapper);
@@ -236,10 +237,6 @@ public abstract class Function<REQ extends Request, RES extends Response, PROV> 
 	protected List getGroups(JWTClaimsSet claimsSet) {
 		LOGGER.info("INTRALE: inicio getGroups");
 		Map<String, Object> claims = claimsSet.getClaims();
-		
-		String username = (String) claims.get("username");
-		
-		LOGGER.info("INTRALE: username on token:" + username);
 		
 		List groups = null;
 		if (claims!=null && claims.size()>0) {
