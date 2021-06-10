@@ -2,6 +2,7 @@ package ar.com.intrale.cloud;
 
 import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -25,6 +26,7 @@ import com.nimbusds.jwt.proc.ConfigurableJWTProcessor;
 
 import ar.com.intrale.cloud.config.ApplicationConfig;
 import ar.com.intrale.cloud.exceptions.BadRequestException;
+import ar.com.intrale.cloud.exceptions.BusinessNotFoundException;
 import ar.com.intrale.cloud.exceptions.EmptyRequestException;
 import ar.com.intrale.cloud.exceptions.FunctionException;
 import ar.com.intrale.cloud.exceptions.TokenNotFoundException;
@@ -36,9 +38,15 @@ import io.micronaut.http.HttpResponse;
 import io.micronaut.validation.validator.Validator;
 
 
-public abstract class Function<REQ extends Request, RES extends Response, PROV> {
+public abstract class IntraleFunction<REQ extends Request, RES extends Response, PROV> {
 	
+	private static final String ID = "id";
+
+	private static final String USERNAME = "username";
+
 	public static final String TOKEN_NOT_FOUND = "TOKEN_NOT_FOUND";
+	
+	public static final String BUSINESS_NOT_FOUND = "BUSINESS_NOT_FOUND";
 
 	public static final String NOT_AUTHORIZATION_FOUND = "NOT_AUTHORIZATION_FOUND";
 
@@ -61,8 +69,12 @@ public abstract class Function<REQ extends Request, RES extends Response, PROV> 
 	public static final String EXPIRED = "Expired";
 
 	public static final String BEARER = "Bearer ";
+	
+	public static final String BUSINESS_ATTRIBUTE = "profile";
+	
+	public static final String BUSINESS_ATTRIBUTE_SEPARATOR = ",";
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(Function.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(IntraleFunction.class);
 	
 	public static final String TRUE = "true";
 	
@@ -123,14 +135,14 @@ public abstract class Function<REQ extends Request, RES extends Response, PROV> 
 		return Boolean.TRUE;
     }
 	
-	public HttpResponse<String> apply(String authorization, String request) {
+	public HttpResponse<String> apply(Map <String, String> headers, String request) {
 		
     	LOGGER.info("INTRALE: iniciando funcion");
     	LOGGER.info("INTRALE: request => \n" + request);
     	try {
-    		validate(authorization);
+    		validate(headers);
     		
-    		REQ requestObject = (REQ) build(request, requestType);
+    		REQ requestObject = (REQ) build(headers, request, requestType);
 	    	
 	    	if (StringUtils.isEmpty(request)) {
 	    		return HttpResponse.badRequest();
@@ -158,7 +170,7 @@ public abstract class Function<REQ extends Request, RES extends Response, PROV> 
 	public abstract RES execute (REQ request) throws FunctionException;
 
 	
-	protected Request build(String request, Class<Request> requestType) throws FunctionException {  	
+	protected Request build(Map <String, String> headers, String request, Class<Request> requestType) throws FunctionException {  	
 		if (StringUtils.isEmpty(request)) {
     		throw new EmptyRequestException(new Error(EMPTY_REQUEST, EMPTY_REQUEST), mapper);
     	}
@@ -170,8 +182,15 @@ public abstract class Function<REQ extends Request, RES extends Response, PROV> 
 			throw new UnexpectedException(new Error(UNEXPECTED, e.getMessage()), mapper);
 		}
 		
-    	Collection<Error> errors = new ArrayList<Error>();
+    	validateRequestBuilded(requestObject);
+
+    	requestObject.setHeaders(headers);
     	
+    	return requestObject;
+	}
+
+	protected void validateRequestBuilded(Request requestObject) throws BadRequestException {
+		Collection<Error> errors = new ArrayList<Error>();
     	Set<ConstraintViolation<Request>> validatorErrors = validator.validate(requestObject, Default.class);
     	if (validatorErrors.size()>0) {
 	    	Iterator<ConstraintViolation<Request>> it = validatorErrors.iterator();
@@ -182,8 +201,6 @@ public abstract class Function<REQ extends Request, RES extends Response, PROV> 
 	    	LOGGER.info("retornando error");
 	    	throw new BadRequestException(errors, mapper);
     	}
-
-    	return requestObject;
 	}
 	
     public PROV getProvider() {
@@ -207,20 +224,34 @@ public abstract class Function<REQ extends Request, RES extends Response, PROV> 
 		return !StringUtils.isEmpty(getFunctionGroup());
 	}
 	
-	public void validate (String authorization) throws FunctionException {
+	public void validate (Map <String, String> headers) throws FunctionException {
 		LOGGER.info("INTRALE: inicio validate");
+		
+		String authorization = headers.get(Lambda.HEADER_AUTHORIZATION);
+		String idToken = headers.get(Lambda.HEADER_ID_TOKEN);
+		String businessName = headers.get(Lambda.HEADER_BUSINESS_NAME);
+		
 		if (isSecurityEnabled()) {
+			if (StringUtils.isEmpty(businessName)) {
+				throw new BusinessNotFoundException(new Error(BUSINESS_NOT_FOUND, BUSINESS_NOT_FOUND), mapper);
+			}
 			if (authorization!=null){
 				
-				JWTClaimsSet claimsSet = validateToken(authorization);
+				JWTClaimsSet authClaimsSet = validateToken(authorization, ACCESS);
+				JWTClaimsSet idTokenClaimsSet = validateToken(idToken, ID);
 				
-				//TODO: Validar que el usuario este registrado para la organizacion / negocio que desea ejecutar la funcion
-				String username = (String) claimsSet.getClaims().get("username");
+				//Se valida que el usuario este registrado para la organizacion / negocio que desea ejecutar la funcion
+				String username = (String) authClaimsSet.getClaims().get(USERNAME);
+				String businessNames = (String) idTokenClaimsSet.getClaims().get(BUSINESS_ATTRIBUTE);
+				List<String> businessNamesRegistered = Arrays.asList(businessNames.split(BUSINESS_ATTRIBUTE_SEPARATOR));
+				if (!businessNamesRegistered.contains(businessName)) {
+					throw new UnauthorizeExeption(new Error(UNAUTHORIZED, "User " + username + " Unauthorized for business " + businessName), mapper);
+				}
 				
 				LOGGER.info("INTRALE: username on token:" + username);
 				
 				// Validando si el usuario pertenece al grupo que tiene permitido ejecutar esta accion
-				List groups = getGroups(claimsSet);
+				List groups = getGroups(authClaimsSet);
 				if  ((!StringUtils.isEmpty(getFunctionGroup())) &&
 						((groups==null) || (!groups.contains(getFunctionGroup())))){
 					throw new UnauthorizeExeption(new Error(UNAUTHORIZED, UNAUTHORIZED), mapper);
@@ -246,13 +277,18 @@ public abstract class Function<REQ extends Request, RES extends Response, PROV> 
 		return groups;
 	}
 
-	private JWTClaimsSet validateToken(String authorization)
+	private JWTClaimsSet validateToken(String token, String tokenUse)
 			throws FunctionException {
 		LOGGER.info("INTRALE: inicio validateToken");
-		if (StringUtils.isEmpty(authorization)) {
+		if (StringUtils.isEmpty(token)) {
 			throw new TokenNotFoundException(new Error(TOKEN_NOT_FOUND, TOKEN_NOT_FOUND), mapper);
 		}
-		String jwt = authorization.substring(BEARER.length());
+		
+		String jwt = token;
+		if (token.contains(BEARER)) {
+			jwt = token.substring(BEARER.length());
+		}
+		
 		JWTClaimsSet claimsSet = null;
 		try {
 			claimsSet = processor.process(jwt, null);
@@ -265,13 +301,13 @@ public abstract class Function<REQ extends Request, RES extends Response, PROV> 
 			throw new BadRequestException(new Error(BAD_TOKEN, BAD_TOKEN), mapper);
 		} catch (Exception e) {
 			LOGGER.error("INTRALE: unexpected exception");
-			LOGGER.error("INTRALE: authorization:" + authorization);
+			LOGGER.error("INTRALE: authorization:" + token);
 			LOGGER.error(FunctionException.toString(e));
 			throw new UnexpectedException(new Error(UNEXPECTED_EXCEPTION, UNEXPECTED_EXCEPTION), mapper);
 		} 
 		
 		if ((!isCorrectUserPool(claimsSet)) || 
-				(!isCorrectTokenUse(claimsSet, ACCESS))) {
+				(!isCorrectTokenUse(claimsSet, tokenUse))) {
 			LOGGER.info("INTRALE: invalid token");
 			throw new UnauthorizeExeption(new Error(INVALID_TOKEN, INVALID_TOKEN), mapper);
 		}
@@ -282,7 +318,7 @@ public abstract class Function<REQ extends Request, RES extends Response, PROV> 
 	}
 	
 	private boolean isCorrectUserPool(JWTClaimsSet claimsSet) {
-       return claimsSet.getIssuer().equals(userPoolIdUrl);
+       return userPoolIdUrl.contains(claimsSet.getIssuer());
 	}
 	 
 	private boolean isCorrectTokenUse(JWTClaimsSet claimsSet, String tokenUseType) {

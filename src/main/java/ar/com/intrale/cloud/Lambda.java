@@ -24,6 +24,8 @@ public class Lambda extends MicronautRequestHandler<APIGatewayProxyRequestEvent,
 	
 	public static final String HEADER_FUNCTION = "function";
 	public static final String HEADER_AUTHORIZATION = "Authorization";
+	public static final String HEADER_ID_TOKEN = "idToken";
+	public static final String HEADER_BUSINESS_NAME = "businessName";
 
 	public static final String ALL = "*";
 
@@ -35,7 +37,7 @@ public class Lambda extends MicronautRequestHandler<APIGatewayProxyRequestEvent,
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(Lambda.class);
 	
-	protected Function function;
+	protected IntraleFunction function;
 	
    	@Inject
    	protected ApplicationContext applicationContext;
@@ -50,26 +52,25 @@ public class Lambda extends MicronautRequestHandler<APIGatewayProxyRequestEvent,
 		//Instanciar Function
 		Map <String, String> headers = request.getHeaders();
 		String functionName = StringUtils.EMPTY_STRING;
-		String authorization = StringUtils.EMPTY_STRING;
+
 		if (headers!=null) {
 			functionName = headers.get(HEADER_FUNCTION); 
-			authorization = headers.get(HEADER_AUTHORIZATION); 
 		}
 		LOGGER.info("INTRALE: functionName => " + functionName);
-		LOGGER.info("INTRALE: authorization => " + authorization);
+		LOGGER.info("INTRALE: authorization => " + headers.get(HEADER_AUTHORIZATION));
 		if (!StringUtils.isEmpty(functionName)) {
-			function = applicationContext.getBean(Function.class, Qualifiers.byName(functionName.toUpperCase()));
+			function = applicationContext.getBean(IntraleFunction.class, Qualifiers.byName(functionName.toUpperCase()));
 		} else {
 			try {
-				function = applicationContext.getBean(Function.class);
+				function = applicationContext.getBean(IntraleFunction.class);
 			} catch (NonUniqueBeanException e) {
 				// En caso de que no se haya definido una funcion en el header y existan mas de una funcion candidata para ser instanciada
 				// se intentara instanciar por default el READ
-				function = applicationContext.getBean(Function.class, Qualifiers.byName(Function.READ));
+				function = applicationContext.getBean(IntraleFunction.class, Qualifiers.byName(IntraleFunction.READ));
 			}
 		}
  
-    	HttpResponse<String> response =  (HttpResponse<String>) function.apply(authorization, request.getBody());
+    	HttpResponse<String> response =  (HttpResponse<String>) function.apply(headers, request.getBody());
     	
     	APIGatewayProxyResponseEvent responseEvent = new APIGatewayProxyResponseEvent();
     	
@@ -81,11 +82,12 @@ public class Lambda extends MicronautRequestHandler<APIGatewayProxyRequestEvent,
 		
     	responseEvent.setStatusCode(response.getStatus().getCode());
     	responseEvent.setBody(response.body());
+    	responseEvent.setIsBase64Encoded(Boolean.TRUE);
     	
     	return responseEvent;
     }  
 
-	public Function getFunction() {
+	public IntraleFunction getFunction() {
 		return function;
 	}
 

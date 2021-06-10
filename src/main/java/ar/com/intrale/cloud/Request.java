@@ -1,15 +1,16 @@
 package ar.com.intrale.cloud;
 
+import java.util.Map;
+
 import javax.validation.constraints.NotBlank;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
 
 public class Request {
-    @NonNull
-    @NotBlank
-	private String businessName;
+	
+	private Map <String, String> headers;
 
-    @NonNull
+	@NonNull
     @NotBlank
     private String requestId;
 
@@ -23,13 +24,12 @@ public class Request {
 		this.requestId = requestId;
 	}
 
-	@NonNull
-    @NotBlank
-    public String getBusinessName() {
-		return businessName;
+    public Map<String, String> getHeaders() {
+		return headers;
 	}
 
-	public void setBusinessName(@NonNull String businessName) {
-		this.businessName = businessName;
+	public void setHeaders(Map<String, String> headers) {
+		this.headers = headers;
 	}
+	
 }
