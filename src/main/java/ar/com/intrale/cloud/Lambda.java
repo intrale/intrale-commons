@@ -24,8 +24,8 @@ public class Lambda extends MicronautRequestHandler<APIGatewayProxyRequestEvent,
 	
 	public static final String HEADER_FUNCTION = "function";
 	public static final String HEADER_AUTHORIZATION = "Authorization";
-	public static final String HEADER_ID_TOKEN = "idToken";
-	public static final String HEADER_BUSINESS_NAME = "businessName";
+	public static final String HEADER_ID_TOKEN = "idtoken";
+	public static final String HEADER_BUSINESS_NAME = "businessname";
 
 	public static final String ALL = "*";
 
@@ -56,7 +56,8 @@ public class Lambda extends MicronautRequestHandler<APIGatewayProxyRequestEvent,
 		if (headers!=null) {
 			functionName = headers.get(HEADER_FUNCTION); 
 		}
-		LOGGER.info("INTRALE: functionName => " + functionName);
+
+		LOGGER.info("INTRALE: " + HEADER_FUNCTION + " => " + headers.get(HEADER_FUNCTION));
 		LOGGER.info("INTRALE: " + HEADER_AUTHORIZATION + " => " + headers.get(HEADER_AUTHORIZATION));
 		LOGGER.info("INTRALE: " + HEADER_ID_TOKEN + " => " + headers.get(HEADER_ID_TOKEN));
 		LOGGER.info("INTRALE: " + HEADER_BUSINESS_NAME + " => " + headers.get(HEADER_BUSINESS_NAME));
