@@ -57,7 +57,10 @@ public class Lambda extends MicronautRequestHandler<APIGatewayProxyRequestEvent,
 			functionName = headers.get(HEADER_FUNCTION); 
 		}
 		LOGGER.info("INTRALE: functionName => " + functionName);
-		LOGGER.info("INTRALE: authorization => " + headers.get(HEADER_AUTHORIZATION));
+		LOGGER.info("INTRALE: " + HEADER_AUTHORIZATION + " => " + headers.get(HEADER_AUTHORIZATION));
+		LOGGER.info("INTRALE: " + HEADER_ID_TOKEN + " => " + headers.get(HEADER_ID_TOKEN));
+		LOGGER.info("INTRALE: " + HEADER_BUSINESS_NAME + " => " + headers.get(HEADER_BUSINESS_NAME));
+		
 		if (!StringUtils.isEmpty(functionName)) {
 			function = applicationContext.getBean(IntraleFunction.class, Qualifiers.byName(functionName.toUpperCase()));
 		} else {
