@@ -230,11 +230,12 @@ public abstract class IntraleFunction<REQ extends Request, RES extends Response,
 		String authorization = headers.get(Lambda.HEADER_AUTHORIZATION);
 		String idToken = headers.get(Lambda.HEADER_ID_TOKEN);
 		String businessName = headers.get(Lambda.HEADER_BUSINESS_NAME);
+
+		if (StringUtils.isEmpty(businessName)) {
+			throw new BusinessNotFoundException(new Error(BUSINESS_NOT_FOUND, BUSINESS_NOT_FOUND), mapper);
+		}
 		
 		if (isSecurityEnabled()) {
-			if (StringUtils.isEmpty(businessName)) {
-				throw new BusinessNotFoundException(new Error(BUSINESS_NOT_FOUND, BUSINESS_NOT_FOUND), mapper);
-			}
 			if (authorization!=null){
 				
 				JWTClaimsSet authClaimsSet = validateToken(authorization, ACCESS);
