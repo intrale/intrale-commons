@@ -92,6 +92,7 @@ public abstract class IntraleFunction<REQ extends Request, RES extends Response,
 	public static final String READ = "read";
 	public static final String UPDATE = "update";
 	public static final String DELETE = "delete";
+	public static final String SAVE = "save";
 	
 	private final Class<Request> requestType = (Class<Request>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
 	private final Class<Request> providerType = (Class<Request>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[2];

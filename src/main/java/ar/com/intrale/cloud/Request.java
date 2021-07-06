@@ -5,6 +5,7 @@ import java.util.Map;
 import javax.validation.constraints.NotBlank;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
+import io.micronaut.core.util.StringUtils;
 
 public class Request {
 	
@@ -30,6 +31,13 @@ public class Request {
 
 	public void setHeaders(Map<String, String> headers) {
 		this.headers = headers;
+	}
+	
+	public String getBusinessName() {
+		if (this.headers==null) {
+			return StringUtils.EMPTY_STRING;
+		}
+		return this.headers.get(Lambda.HEADER_BUSINESS_NAME);
 	}
 	
 }

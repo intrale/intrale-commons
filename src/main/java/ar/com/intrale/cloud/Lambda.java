@@ -20,7 +20,7 @@ import io.micronaut.http.HttpResponse;
 import io.micronaut.inject.qualifiers.Qualifiers;
 
 @Introspected
-public class Lambda extends MicronautRequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
+public class Lambda extends MicronautRequestHandler<APIGatewayProxyRequestEvent, Object> {
 	
 	public static final String HEADER_FUNCTION = "function";
 	public static final String HEADER_AUTHORIZATION = "Authorization";
@@ -48,7 +48,7 @@ public class Lambda extends MicronautRequestHandler<APIGatewayProxyRequestEvent,
 	}
 	
 	@Override
-    public APIGatewayProxyResponseEvent execute(APIGatewayProxyRequestEvent request) {
+    public Object execute(APIGatewayProxyRequestEvent request) {
 		//Instanciar Function
 		Map <String, String> headers = request.getHeaders();
 		String functionName = StringUtils.EMPTY_STRING;

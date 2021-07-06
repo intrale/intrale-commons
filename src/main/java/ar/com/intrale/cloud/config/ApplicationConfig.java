@@ -21,9 +21,20 @@ public class ApplicationConfig {
 	@ConfigurationBuilder("database")
 	protected CredentialsConfig database = new CredentialsConfig();
 	
+	@ConfigurationBuilder("s3")
+	protected S3Config s3 = new S3Config();
+	
 	@ConfigurationBuilder("cognito")
 	protected CognitoConfig cognito = new CognitoConfig();
 	
+
+	public S3Config getS3() {
+		return s3;
+	}
+
+	public void setS3(S3Config s3) {
+		this.s3 = s3;
+	}
 
 	public CognitoConfig getCognito() {
 		return cognito;
