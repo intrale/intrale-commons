@@ -37,7 +37,7 @@ public class Request {
 		if (this.headers==null) {
 			return StringUtils.EMPTY_STRING;
 		}
-		return this.headers.get(Lambda.HEADER_BUSINESS_NAME);
+		return this.headers.get(FunctionBuilder.HEADER_BUSINESS_NAME);
 	}
 	
 }

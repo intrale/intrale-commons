@@ -11,14 +11,11 @@ import org.slf4j.LoggerFactory;
 import ar.com.intrale.cloud.config.ApplicationConfig;
 import io.micronaut.context.ApplicationContext;
 import io.micronaut.context.annotation.Requires;
-import io.micronaut.core.util.StringUtils;
-import io.micronaut.http.HttpResponse;
 import io.micronaut.http.MediaType;
 import io.micronaut.http.annotation.Body;
 import io.micronaut.http.annotation.Controller;
 import io.micronaut.http.annotation.Header;
 import io.micronaut.http.annotation.Post;
-import io.micronaut.inject.qualifiers.Qualifiers;
 import io.micronaut.scheduling.annotation.Scheduled;
 
 @Controller("/")
@@ -27,13 +24,16 @@ public class MicroService {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(MicroService.class);
 	
-	private IntraleFunction function;
+	private BaseFunction function;
 	
 	@Inject
 	private ApplicationContext applicationContext;
 	
 	@Inject
 	private ApplicationConfig config;
+	
+	@Inject
+	private FunctionBuilder builder;
 	
 	private Long lastExecution = System.currentTimeMillis();
 	
@@ -42,29 +42,22 @@ public class MicroService {
 	}
 	
 	@Post(produces = MediaType.APPLICATION_JSON)
-	public HttpResponse<String> post ( 
-			@Header(Lambda.HEADER_AUTHORIZATION) String authorization, 
-			@Header(Lambda.HEADER_BUSINESS_NAME) String businessName, 
-			@Header(Lambda.HEADER_FUNCTION) String functionName, 
-			@Body String request) {
+	public Object post ( 
+			@Header(FunctionBuilder.HEADER_AUTHORIZATION) String authorization, 
+			@Header(FunctionBuilder.HEADER_BUSINESS_NAME) String businessName, 
+			@Header(FunctionBuilder.HEADER_FUNCTION) String functionName, 
+			@Body Object request) {
 		lastExecution = System.currentTimeMillis();
 		
 		//Instanciar Function
 		Map <String, String> headers = new HashMap<String, String>();
-		headers.put(Lambda.HEADER_AUTHORIZATION, authorization);
-		headers.put(Lambda.HEADER_BUSINESS_NAME, businessName);
-		headers.put(Lambda.HEADER_FUNCTION, functionName);
+		headers.put(FunctionBuilder.HEADER_AUTHORIZATION, authorization);
+		headers.put(FunctionBuilder.HEADER_BUSINESS_NAME, businessName);
+		headers.put(FunctionBuilder.HEADER_FUNCTION, functionName);
 		
-		LOGGER.info("INTRALE: functionName => " + functionName);
-		LOGGER.info("INTRALE: authorization => " + authorization);
-		LOGGER.info("INTRALE: businessName => " + businessName);
-		if (!StringUtils.isEmpty(functionName)) {
-			function = applicationContext.getBean(IntraleFunction.class, Qualifiers.byName(functionName.toUpperCase()));
-		} else {
-			function = applicationContext.getBean(IntraleFunction.class);
-		}
+		function = builder.getfunction(headers);
 		
-		return (HttpResponse<String>) function.apply(headers, request);
+		return function.msApply(headers, request);
 	}
 	
 	@Scheduled(fixedDelay = "${app.activity.fixedDelay:'30s'}", initialDelay = "${app.activity.initialDelay:'15s'}")
