@@ -108,8 +108,13 @@ public abstract class BaseFunction<	FUNCTION_REQ,
         
 	}
 	
-	public Object lambdaApply(Map <String, String> headers, APIGatewayProxyRequestEvent request) {
-		Object response = msApply(headers, request.getBody());
+	public Object lambdaApply(Map <String, String> headers, Object request) {
+		String body = StringUtils.EMPTY_STRING;
+		if (request instanceof APIGatewayProxyRequestEvent) {
+			body = ((APIGatewayProxyRequestEvent) request).getBody();
+		}
+		
+		Object response = msApply(headers, body);
 		RES_BUILDER builder = (RES_BUILDER) applicationContext.getBean(responseBuilderType);
 		return builder.wrapForLambda(response);
 		

@@ -1,4 +1,5 @@
 package ar.com.intrale.cloud;
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
@@ -13,7 +14,7 @@ import io.micronaut.core.annotation.Introspected;
 import io.micronaut.function.aws.MicronautRequestHandler;
 
 @Introspected
-public class Lambda extends MicronautRequestHandler<APIGatewayProxyRequestEvent, Object> {
+public class Lambda extends MicronautRequestHandler<Object, Object> {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(Lambda.class);
 	
@@ -28,11 +29,18 @@ public class Lambda extends MicronautRequestHandler<APIGatewayProxyRequestEvent,
 	}
 	
 	@Override
-    public Object execute(APIGatewayProxyRequestEvent request) {
-		//Instanciar Function
-		Map <String, String> headers = request.getHeaders();
+    public Object execute(Object request) {
 		
-		function = builder.getfunction(request.getHeaders());
+		LOGGER.debug("Tipo recibido:" + request.getClass());
+		
+		//Instanciar Function
+		Map <String, String> headers = new HashMap<String, String>();
+		if (request instanceof APIGatewayProxyRequestEvent) {
+			APIGatewayProxyRequestEvent apiGatewayProxyRequestEvent = (APIGatewayProxyRequestEvent) request;
+			headers.putAll(apiGatewayProxyRequestEvent.getHeaders());
+		}
+		
+		function = builder.getfunction(headers);
  
     	return function.lambdaApply(headers, request);
     }  

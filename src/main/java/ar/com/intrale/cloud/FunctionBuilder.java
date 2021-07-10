@@ -32,12 +32,12 @@ public class FunctionBuilder {
 
 		if (headers!=null) {
 			functionName = headers.get(HEADER_FUNCTION); 
-		}
 
-		LOGGER.info("INTRALE: " + HEADER_FUNCTION + " => " + headers.get(HEADER_FUNCTION));
-		LOGGER.info("INTRALE: " + HEADER_AUTHORIZATION + " => " + headers.get(HEADER_AUTHORIZATION));
-		LOGGER.info("INTRALE: " + HEADER_ID_TOKEN + " => " + headers.get(HEADER_ID_TOKEN));
-		LOGGER.info("INTRALE: " + HEADER_BUSINESS_NAME + " => " + headers.get(HEADER_BUSINESS_NAME));
+			LOGGER.info("INTRALE: " + HEADER_FUNCTION + " => " + headers.get(HEADER_FUNCTION));
+			LOGGER.info("INTRALE: " + HEADER_AUTHORIZATION + " => " + headers.get(HEADER_AUTHORIZATION));
+			LOGGER.info("INTRALE: " + HEADER_ID_TOKEN + " => " + headers.get(HEADER_ID_TOKEN));
+			LOGGER.info("INTRALE: " + HEADER_BUSINESS_NAME + " => " + headers.get(HEADER_BUSINESS_NAME));
+		}
 		
 		if (!StringUtils.isEmpty(functionName)) {
 			function = applicationContext.getBean(BaseFunction.class, Qualifiers.byName(functionName.toUpperCase()));
