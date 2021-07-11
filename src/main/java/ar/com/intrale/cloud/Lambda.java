@@ -9,6 +9,7 @@ import javax.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.amazonaws.services.lambda.runtime.ClientContext;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 
 import io.micronaut.core.annotation.Introspected;
@@ -31,11 +32,18 @@ public class Lambda extends MicronautRequestHandler<Object, Object> {
 	
 	@Override
     public Object execute(Object request) {
+		Map <String, String> headers = new HashMap<String, String>();
+		try {
+			ClientContext clientContext = applicationContext.getBean(ClientContext.class);
+			LOGGER.info(" clientContext.getCustom():" + clientContext.getCustom());
+			LOGGER.info(" clientContext.getEnvironment()):" + clientContext.getEnvironment());
+		} catch (Exception e) {
+			LOGGER.info("No fue posible instanciar ClientContext");
+		}
 		
 		LOGGER.info("Tipo recibido:" + request.getClass());
 		
 		//Instanciar Function
-		Map <String, String> headers = new HashMap<String, String>();
 		if (request instanceof APIGatewayProxyRequestEvent) {
 			APIGatewayProxyRequestEvent apiGatewayProxyRequestEvent = (APIGatewayProxyRequestEvent) request;
 			headers.putAll(apiGatewayProxyRequestEvent.getHeaders());
