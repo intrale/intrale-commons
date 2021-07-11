@@ -1,5 +1,6 @@
 package ar.com.intrale.cloud;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
@@ -38,6 +39,9 @@ public class Lambda extends MicronautRequestHandler<Object, Object> {
 		if (request instanceof APIGatewayProxyRequestEvent) {
 			APIGatewayProxyRequestEvent apiGatewayProxyRequestEvent = (APIGatewayProxyRequestEvent) request;
 			headers.putAll(apiGatewayProxyRequestEvent.getHeaders());
+		}
+		if (request instanceof LinkedHashMap) {
+			LOGGER.info("Contenido:" + ((LinkedHashMap)request).toString());
 		}
 		
 		function = builder.getfunction(headers);
