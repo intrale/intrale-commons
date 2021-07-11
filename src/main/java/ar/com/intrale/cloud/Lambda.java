@@ -31,7 +31,7 @@ public class Lambda extends MicronautRequestHandler<Object, Object> {
 	@Override
     public Object execute(Object request) {
 		
-		LOGGER.debug("Tipo recibido:" + request.getClass());
+		LOGGER.info("Tipo recibido:" + request.getClass());
 		
 		//Instanciar Function
 		Map <String, String> headers = new HashMap<String, String>();
