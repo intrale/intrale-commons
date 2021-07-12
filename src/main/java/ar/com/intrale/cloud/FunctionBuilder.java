@@ -20,6 +20,7 @@ public class FunctionBuilder {
 	public static final String HEADER_AUTHORIZATION = "Authorization";
 	public static final String HEADER_ID_TOKEN = "idtoken";
 	public static final String HEADER_BUSINESS_NAME = "businessname";
+	public static final String HEADER_CONTENT_TYPE = "content-type";
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(FunctionBuilder.class);
 	
@@ -37,6 +38,7 @@ public class FunctionBuilder {
 			LOGGER.info("INTRALE: " + HEADER_AUTHORIZATION + " => " + headers.get(HEADER_AUTHORIZATION));
 			LOGGER.info("INTRALE: " + HEADER_ID_TOKEN + " => " + headers.get(HEADER_ID_TOKEN));
 			LOGGER.info("INTRALE: " + HEADER_BUSINESS_NAME + " => " + headers.get(HEADER_BUSINESS_NAME));
+			LOGGER.info("INTRALE: " + HEADER_CONTENT_TYPE + " => " + headers.get(HEADER_CONTENT_TYPE));
 		}
 		
 		if (!StringUtils.isEmpty(functionName)) {
