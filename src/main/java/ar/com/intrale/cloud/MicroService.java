@@ -46,7 +46,7 @@ public class MicroService {
 			@Header(FunctionBuilder.HEADER_AUTHORIZATION) String authorization, 
 			@Header(FunctionBuilder.HEADER_BUSINESS_NAME) String businessName, 
 			@Header(FunctionBuilder.HEADER_FUNCTION) String functionName, 
-			@Body Object request) {
+			@Body String request) {
 		lastExecution = System.currentTimeMillis();
 		
 		//Instanciar Function

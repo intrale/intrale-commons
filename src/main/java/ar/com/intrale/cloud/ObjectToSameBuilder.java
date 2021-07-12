@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 import ar.com.intrale.cloud.exceptions.FunctionException;
 
 @Singleton
-public class ObjectToSameBuilder implements BuilderForLambda<Object, Object> {
+public class ObjectToSameBuilder implements Builder<Object, Object> {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ObjectToSameBuilder.class);
 	
@@ -20,10 +20,5 @@ public class ObjectToSameBuilder implements BuilderForLambda<Object, Object> {
 		return source;
 	}
 
-	@Override
-	public Object wrapForLambda(Object target) {
-		LOGGER.info("ObjectToSameBuilder wrapForLambda");
-		return target;
-	}
 
 }

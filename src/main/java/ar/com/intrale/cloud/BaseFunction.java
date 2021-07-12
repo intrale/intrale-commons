@@ -2,7 +2,6 @@ package ar.com.intrale.cloud;
 
 import java.lang.reflect.ParameterizedType;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -13,7 +12,6 @@ import javax.inject.Named;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.jwt.JWTClaimsSet;
@@ -78,7 +76,9 @@ public abstract class BaseFunction<	FUNCTION_REQ,
 		return Boolean.TRUE;
     }
 	
-	public Object msApply(Map <String, String> headers, Object request) {
+	public abstract FUNCTION_RES execute (FUNCTION_REQ request) throws FunctionException;
+	
+	public Object msApply(Map <String, String> headers, String request) {
 		
     	LOGGER.info("INTRALE: iniciando funcion");
     	LOGGER.info("INTRALE: request => \n" + request);
@@ -90,7 +90,6 @@ public abstract class BaseFunction<	FUNCTION_REQ,
     		FUNCTION_REQ requestObject = (FUNCTION_REQ) buildRequest(headers, request);
 	    	
 	    	FUNCTION_RES res = execute(requestObject);
-	    	//res.setStatusCode(200);
 	    	
 	    	return buildResponse(res);
 	    	
@@ -108,30 +107,10 @@ public abstract class BaseFunction<	FUNCTION_REQ,
         
 	}
 	
-	public Object lambdaApply(Map <String, String> headers, Object request) {
-		String body = StringUtils.EMPTY_STRING;
-		if (request instanceof APIGatewayProxyRequestEvent) {
-			body = ((APIGatewayProxyRequestEvent) request).getBody();
-		}
-		
-		Object response = msApply(headers, body);
+	public APIGatewayProxyResponseEvent lambdaApply(Map <String, String> headers, String request) {
+		Object response = msApply(headers, request);
 		RES_BUILDER builder = (RES_BUILDER) applicationContext.getBean(responseBuilderType);
 		return builder.wrapForLambda(response);
-		
-		/*HttpResponse<String> response =  (HttpResponse<String>) msApply(headers, request.getBody());
-    	APIGatewayProxyResponseEvent responseEvent = new APIGatewayProxyResponseEvent();
-    	
-		// CORS avaiable
-		Map<String, String> responseHeaders = new HashMap<String, String>();
-		responseHeaders.put(FunctionConst.ACCESS_CONTROL_ALLOW_ORIGIN, FunctionConst.ALL);
-		responseHeaders.put(FunctionConst.ACCESS_CONTROL_ALLOW_METHODS, FunctionConst.GET_OPTIONS_HEAD_PUT_POST);
-		responseEvent.setHeaders(responseHeaders); 
-		
-    	responseEvent.setStatusCode(response.getStatus().getCode());
-    	responseEvent.setBody(response.body());
-    	responseEvent.setIsBase64Encoded(Boolean.TRUE);
-    	
-    	return responseEvent;*/
 	}
 	
 	private Object buildResponse(FUNCTION_RES res) throws Exception {
@@ -144,7 +123,7 @@ public abstract class BaseFunction<	FUNCTION_REQ,
 		return (FUNCTION_REQ) builder.build(headers, request);
 	}
 	
-	public abstract FUNCTION_RES execute (FUNCTION_REQ request) throws FunctionException;
+
 	
 	// Segurizacion de la funcion
 	

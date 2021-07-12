@@ -1,22 +1,18 @@
 package ar.com.intrale.cloud;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
-
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.amazonaws.services.lambda.runtime.ClientContext;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
+import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 
 import io.micronaut.core.annotation.Introspected;
 import io.micronaut.function.aws.MicronautRequestHandler;
 
 @Introspected
-public class Lambda extends MicronautRequestHandler<Object, Object> {
+public class Lambda extends MicronautRequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(Lambda.class);
 	
@@ -31,30 +27,12 @@ public class Lambda extends MicronautRequestHandler<Object, Object> {
 	}
 	
 	@Override
-    public Object execute(Object request) {
-		Map <String, String> headers = new HashMap<String, String>();
-		try {
-			ClientContext clientContext = applicationContext.getBean(ClientContext.class);
-			LOGGER.info(" clientContext.getCustom():" + clientContext.getCustom());
-			LOGGER.info(" clientContext.getEnvironment()):" + clientContext.getEnvironment());
-		} catch (Exception e) {
-			LOGGER.info("No fue posible instanciar ClientContext");
-		}
+    public APIGatewayProxyResponseEvent execute(APIGatewayProxyRequestEvent request) {
+		LOGGER.info("Ejecutando lambda");
 		
-		LOGGER.info("Tipo recibido:" + request.getClass());
-		
-		//Instanciar Function
-		if (request instanceof APIGatewayProxyRequestEvent) {
-			APIGatewayProxyRequestEvent apiGatewayProxyRequestEvent = (APIGatewayProxyRequestEvent) request;
-			headers.putAll(apiGatewayProxyRequestEvent.getHeaders());
-		}
-		if (request instanceof LinkedHashMap) {
-			LOGGER.info("Contenido:" + ((LinkedHashMap)request).toString());
-		}
-		
-		function = builder.getfunction(headers);
+		function = builder.getfunction(request.getHeaders());
  
-    	return function.lambdaApply(headers, request);
+    	return function.lambdaApply(request.getHeaders(), request.getBody());
     }  
 
 	public BaseFunction getFunction() {

@@ -37,7 +37,7 @@ public class FunctionResponseToHttpResponseBuilder implements BuilderForLambda<R
 	}
 
 	@Override
-	public Object wrapForLambda(HttpResponse<String> target) {
+	public APIGatewayProxyResponseEvent wrapForLambda(HttpResponse<String> target) {
     	APIGatewayProxyResponseEvent responseEvent = new APIGatewayProxyResponseEvent();
     	
 		// CORS avaiable
