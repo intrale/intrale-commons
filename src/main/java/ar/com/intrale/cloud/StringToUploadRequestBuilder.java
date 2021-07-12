@@ -2,8 +2,11 @@ package ar.com.intrale.cloud;
 
 import java.util.Map;
 
+import javax.inject.Singleton;
+
 import ar.com.intrale.cloud.exceptions.FunctionException;
 
+@Singleton
 public class StringToUploadRequestBuilder implements Builder<String, UploadRequest> {
 
 	@Override
