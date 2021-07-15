@@ -87,9 +87,15 @@ public abstract class BaseFunction<	FUNCTION_REQ,
     		
     		validate(headers);
     		
+    		LOGGER.info("INTRALE: Construyendo request");
+    		
     		FUNCTION_REQ requestObject = (FUNCTION_REQ) buildRequest(headers, request);
+    		
+    		LOGGER.info("INTRALE: Ejecutando");
 	    	
 	    	FUNCTION_RES res = execute(requestObject);
+	    	
+	    	LOGGER.info("INTRALE: Construyendo respuesta");
 	    	
 	    	return buildResponse(res);
 	    	
