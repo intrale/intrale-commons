@@ -50,6 +50,7 @@ public class StringToRequestBuilder<REQ extends Request> implements Builder<Stri
 		try {
 			requestObject = (REQ) mapper.readValue(source, requestType);
 		} catch (JsonProcessingException e) {
+			LOGGER.error("Ocurrio un error parseando JSON:" + FunctionException.toString(e));
 			throw new UnexpectedException(new Error(UNEXPECTED, e.getMessage()), mapper);
 		}
 		
