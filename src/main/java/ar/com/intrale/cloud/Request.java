@@ -4,9 +4,12 @@ import java.util.Map;
 
 import javax.validation.constraints.NotBlank;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import edu.umd.cs.findbugs.annotations.NonNull;
 import io.micronaut.core.util.StringUtils;
 
+@JsonIgnoreProperties(value = { "headers" })
 public class Request {
 	
 	private Map <String, String> headers;
