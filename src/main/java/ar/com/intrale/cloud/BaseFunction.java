@@ -78,7 +78,7 @@ public abstract class BaseFunction<	FUNCTION_REQ,
 	
 	public abstract FUNCTION_RES execute (FUNCTION_REQ request) throws FunctionException;
 	
-	public Object msApply(Map <String, String> headers, String request) {
+	public Object msApply(Map <String, String> headers, Map <String, String> queryStringParameters, String request) {
 		
     	LOGGER.info("INTRALE: iniciando funcion");
     	LOGGER.info("INTRALE: request => \n" + request);
@@ -89,7 +89,7 @@ public abstract class BaseFunction<	FUNCTION_REQ,
     		
     		LOGGER.info("INTRALE: Construyendo request");
     		
-    		FUNCTION_REQ requestObject = (FUNCTION_REQ) buildRequest(headers, request);
+    		FUNCTION_REQ requestObject = (FUNCTION_REQ) buildRequest(headers, queryStringParameters, request);
     		
     		LOGGER.info("INTRALE: Ejecutando");
 	    	
@@ -113,23 +113,21 @@ public abstract class BaseFunction<	FUNCTION_REQ,
         
 	}
 	
-	public APIGatewayProxyResponseEvent lambdaApply(Map <String, String> headers, String request) {
-		Object response = msApply(headers, request);
+	public APIGatewayProxyResponseEvent lambdaApply(Map <String, String> headers, Map <String, String> queryStringParameters, String request) {
+		Object response = msApply(headers, queryStringParameters, request);
 		RES_BUILDER builder = (RES_BUILDER) applicationContext.getBean(responseBuilderType);
 		return builder.wrapForLambda(response);
 	}
 	
 	private Object buildResponse(FUNCTION_RES res) throws Exception {
 		RES_BUILDER builder = (RES_BUILDER) applicationContext.getBean(responseBuilderType);
-		return builder.build(null, res);
+		return builder.build(null, null, res);
 	}
 	
-	protected FUNCTION_REQ buildRequest(Map <String, String> headers, Object request) throws FunctionException {  	
+	protected FUNCTION_REQ buildRequest(Map <String, String> headers, Map <String, String> queryStringParameters, Object request) throws FunctionException {  	
 		REQ_BUILDER builder = (REQ_BUILDER) applicationContext.getBean(requestBuilderType);
-		return (FUNCTION_REQ) builder.build(headers, request);
+		return (FUNCTION_REQ) builder.build(headers, queryStringParameters, request);
 	}
-	
-
 	
 	// Segurizacion de la funcion
 	

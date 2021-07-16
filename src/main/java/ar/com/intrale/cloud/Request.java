@@ -9,14 +9,24 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import io.micronaut.core.util.StringUtils;
 
-@JsonIgnoreProperties(value = { "headers" })
+@JsonIgnoreProperties(value = { "headers", "queryStringParameters" })
 public class Request {
 	
 	private Map <String, String> headers;
+	
+	private Map <String, String> queryStringParameters;
 
 	@NonNull
     @NotBlank
     private String requestId;
+
+	public Map<String, String> getQueryStringParameters() {
+		return queryStringParameters;
+	}
+
+	public void setQueryStringParameters(Map<String, String> queryStringParameters) {
+		this.queryStringParameters = queryStringParameters;
+	}
 
 	@NonNull
     @NotBlank

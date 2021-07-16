@@ -32,7 +32,7 @@ public class Lambda extends MicronautRequestHandler<APIGatewayProxyRequestEvent,
 		
 		function = builder.getfunction(request.getHeaders());
  
-    	return function.lambdaApply(request.getHeaders(), request.getBody());
+    	return function.lambdaApply(request.getHeaders(), request.getQueryStringParameters(), request.getBody());
     }  
 
 	public BaseFunction getFunction() {

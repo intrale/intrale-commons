@@ -6,6 +6,6 @@ import ar.com.intrale.cloud.exceptions.FunctionException;
 
 public interface Builder <SOURCE, TARGET>{
 	
-	TARGET build(Map <String, String> headers, SOURCE source) throws FunctionException ;
+	TARGET build(Map <String, String> headers, Map <String, String> queryStringParameters, SOURCE source) throws FunctionException ;
 
 }

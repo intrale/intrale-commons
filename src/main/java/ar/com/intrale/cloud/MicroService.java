@@ -57,7 +57,7 @@ public class MicroService {
 		
 		function = builder.getfunction(headers);
 		
-		return function.msApply(headers, request);
+		return function.msApply(headers, null, request);
 	}
 	
 	@Scheduled(fixedDelay = "${app.activity.fixedDelay:'30s'}", initialDelay = "${app.activity.initialDelay:'15s'}")

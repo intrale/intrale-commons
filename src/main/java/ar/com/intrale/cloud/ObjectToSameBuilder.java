@@ -15,7 +15,7 @@ public class ObjectToSameBuilder implements Builder<Object, Object> {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ObjectToSameBuilder.class);
 	
 	@Override
-	public Object build(Map<String, String> headers, Object source) throws FunctionException {
+	public Object build(Map<String, String> headers, Map <String, String> queryStringParameters, Object source) throws FunctionException {
 		LOGGER.info("ObjectToSameBuilder build");
 		return source;
 	}

@@ -41,7 +41,7 @@ public class StringToRequestBuilder<REQ extends Request> implements Builder<Stri
    	protected Validator validator;
 
 	@Override
-	public REQ build(Map <String, String> headers, String source) throws FunctionException {
+	public REQ build(Map <String, String> headers, Map <String, String> queryStringParameters, String source) throws FunctionException {
 		if (StringUtils.isEmpty(source)) {
     		throw new EmptyRequestException(new Error(EMPTY_REQUEST, EMPTY_REQUEST), mapper);
     	}
