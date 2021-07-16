@@ -82,6 +82,8 @@ public abstract class BaseFunction<	FUNCTION_REQ,
 		
     	LOGGER.info("INTRALE: iniciando funcion");
     	LOGGER.info("INTRALE: request => \n" + request);
+    	LOGGER.info("INTRALE: headers => \n" + headers);
+    	LOGGER.info("INTRALE: queryStringParameters => \n" + queryStringParameters);
     	
     	try {
     		
