@@ -85,7 +85,7 @@ public abstract class BaseFunction<	FUNCTION_REQ,
     	
     	try {
     		
-    		validate(headers);
+    		validate(headers, queryStringParameters);
     		
     		LOGGER.info("INTRALE: Construyendo request");
     		
@@ -131,12 +131,16 @@ public abstract class BaseFunction<	FUNCTION_REQ,
 	
 	// Segurizacion de la funcion
 	
-	public void validate (Map <String, String> headers) throws FunctionException {
+	public void validate (Map <String, String> headers, Map <String, String> queryStringParameters) throws FunctionException {
 		LOGGER.info("INTRALE: inicio validate");
 		
 		String authorization = headers.get(FunctionBuilder.HEADER_AUTHORIZATION);
 		String idToken = headers.get(FunctionBuilder.HEADER_ID_TOKEN);
+		
 		String businessName = headers.get(FunctionBuilder.HEADER_BUSINESS_NAME);
+		if (StringUtils.isEmpty(businessName) && queryStringParameters!=null) {
+			businessName = queryStringParameters.get(FunctionBuilder.HEADER_BUSINESS_NAME);
+		}
 
 		if (StringUtils.isEmpty(businessName)) {
 			throw new BusinessNotFoundException(new Error(FunctionConst.BUSINESS_NOT_FOUND, FunctionConst.BUSINESS_NOT_FOUND), mapper);
