@@ -14,18 +14,19 @@ public class Request {
 	
 	private Map <String, String> headers;
 	
-	private Map <String, String> queryStringParameters;
+	private Map <String, String> pathParameters;
 
 	@NonNull
     @NotBlank
     private String requestId;
 
-	public Map<String, String> getQueryStringParameters() {
-		return queryStringParameters;
+
+	public Map<String, String> getPathParameters() {
+		return pathParameters;
 	}
 
-	public void setQueryStringParameters(Map<String, String> queryStringParameters) {
-		this.queryStringParameters = queryStringParameters;
+	public void setPathParameters(Map<String, String> pathParameters) {
+		this.pathParameters = pathParameters;
 	}
 
 	@NonNull

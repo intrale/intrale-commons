@@ -78,20 +78,20 @@ public abstract class BaseFunction<	FUNCTION_REQ,
 	
 	public abstract FUNCTION_RES execute (FUNCTION_REQ request) throws FunctionException;
 	
-	public Object msApply(Map <String, String> headers, Map <String, String> queryStringParameters, String request) {
+	public Object msApply(Map <String, String> headers, Map <String, String> pathParameters, String request) {
 		
     	LOGGER.info("INTRALE: iniciando funcion");
     	LOGGER.info("INTRALE: request => \n" + request);
     	LOGGER.info("INTRALE: headers => \n" + headers);
-    	LOGGER.info("INTRALE: queryStringParameters => \n" + queryStringParameters);
+    	LOGGER.info("INTRALE: pathParameters => \n" + pathParameters);
     	
     	try {
     		
-    		validate(headers, queryStringParameters);
+    		validate(headers, pathParameters);
     		
     		LOGGER.info("INTRALE: Construyendo request");
     		
-    		FUNCTION_REQ requestObject = (FUNCTION_REQ) buildRequest(headers, queryStringParameters, request);
+    		FUNCTION_REQ requestObject = (FUNCTION_REQ) buildRequest(headers, pathParameters, request);
     		
     		LOGGER.info("INTRALE: Ejecutando");
 	    	
@@ -115,8 +115,8 @@ public abstract class BaseFunction<	FUNCTION_REQ,
         
 	}
 	
-	public APIGatewayProxyResponseEvent lambdaApply(Map <String, String> headers, Map <String, String> queryStringParameters, String request) {
-		Object response = msApply(headers, queryStringParameters, request);
+	public APIGatewayProxyResponseEvent lambdaApply(Map <String, String> headers, Map <String, String> pathParameters, String request) {
+		Object response = msApply(headers, pathParameters, request);
 		RES_BUILDER builder = (RES_BUILDER) applicationContext.getBean(responseBuilderType);
 		return builder.wrapForLambda(response);
 	}
@@ -126,22 +126,22 @@ public abstract class BaseFunction<	FUNCTION_REQ,
 		return builder.build(null, null, res);
 	}
 	
-	protected FUNCTION_REQ buildRequest(Map <String, String> headers, Map <String, String> queryStringParameters, Object request) throws FunctionException {  	
+	protected FUNCTION_REQ buildRequest(Map <String, String> headers, Map <String, String> pathParameters, Object request) throws FunctionException {  	
 		REQ_BUILDER builder = (REQ_BUILDER) applicationContext.getBean(requestBuilderType);
-		return (FUNCTION_REQ) builder.build(headers, queryStringParameters, request);
+		return (FUNCTION_REQ) builder.build(headers, pathParameters, request);
 	}
 	
 	// Segurizacion de la funcion
 	
-	public void validate (Map <String, String> headers, Map <String, String> queryStringParameters) throws FunctionException {
+	public void validate (Map <String, String> headers, Map <String, String> pathParameters) throws FunctionException {
 		LOGGER.info("INTRALE: inicio validate");
 		
 		String authorization = headers.get(FunctionBuilder.HEADER_AUTHORIZATION);
 		String idToken = headers.get(FunctionBuilder.HEADER_ID_TOKEN);
 		
 		String businessName = headers.get(FunctionBuilder.HEADER_BUSINESS_NAME);
-		if (StringUtils.isEmpty(businessName) && queryStringParameters!=null) {
-			businessName = queryStringParameters.get(FunctionBuilder.HEADER_BUSINESS_NAME);
+		if (StringUtils.isEmpty(businessName) && pathParameters!=null) {
+			businessName = pathParameters.get(FunctionBuilder.HEADER_BUSINESS_NAME);
 		}
 
 		if (StringUtils.isEmpty(businessName)) {
