@@ -2,6 +2,7 @@ package ar.com.intrale.cloud;
 
 import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
@@ -14,7 +15,6 @@ import javax.validation.groups.Default;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import ar.com.intrale.cloud.exceptions.BadRequestException;
@@ -48,8 +48,8 @@ public class StringToRequestBuilder<REQ extends Request> implements Builder<Stri
     	
 		REQ requestObject = null;
 		try {
-			requestObject = (REQ) mapper.readValue(source, requestType);
-		} catch (JsonProcessingException e) {
+			requestObject = (REQ) mapper.readValue(Base64.getDecoder().decode(source), requestType);
+		} catch (Exception e) {
 			LOGGER.error("Ocurrio un error parseando JSON:" + FunctionException.toString(e));
 			throw new UnexpectedException(new Error(UNEXPECTED, e.getMessage()), mapper);
 		}
