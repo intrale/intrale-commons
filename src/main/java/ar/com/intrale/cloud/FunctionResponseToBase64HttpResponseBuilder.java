@@ -26,7 +26,7 @@ public class FunctionResponseToBase64HttpResponseBuilder implements BuilderForLa
 		try {
 			source.setStatusCode(200); //TODO: Revisar si es necesaria esta linea
 			HttpResponse<String> response = HttpResponse.ok().body(Base64.getEncoder().encodeToString(mapper.writeValueAsString(source).getBytes()));
-			LOGGER.info("INTRALE: response => \n" + response.body());
+			LOGGER.info("INTRALE: response encoded => \n" + response.body());
 			return response;
 		} catch (Exception e) {
 			LOGGER.error(FunctionException.toString(e));
