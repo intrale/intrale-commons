@@ -42,6 +42,7 @@ public class FunctionResponseToBase64HttpResponseBuilder implements BuilderForLa
 		Map<String, String> responseHeaders = new HashMap<String, String>();
 		responseHeaders.put(FunctionConst.ACCESS_CONTROL_ALLOW_ORIGIN, FunctionConst.ALL);
 		responseHeaders.put(FunctionConst.ACCESS_CONTROL_ALLOW_METHODS, FunctionConst.GET_OPTIONS_HEAD_PUT_POST);
+		responseHeaders.put(FunctionConst.ACCESS_CONTROL_ALLOW_HEADERS, FunctionConst.ALLOW_HEADERS_AVAIABLES);
 		responseEvent.setHeaders(responseHeaders); 
 		
     	responseEvent.setStatusCode(target.getStatus().getCode());

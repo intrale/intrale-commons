@@ -13,6 +13,10 @@ public abstract class FunctionConst {
 
 	public static final String ACCESS_CONTROL_ALLOW_ORIGIN = "Access-Control-Allow-Origin";
 	
+	public static final String ACCESS_CONTROL_ALLOW_HEADERS = "Access-Control-Allow-Headers";
+	
+	public static final String ALLOW_HEADERS_AVAIABLES = "Content-Type,Accept,Referer,User-Agent,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,Access-Control-Allow-Origin,Access-Control-Allow-Headers,function,idToken,businessName";
+	
 	public static final String TOKEN_NOT_FOUND = "TOKEN_NOT_FOUND";
 	
 	public static final String BUSINESS_NOT_FOUND = "BUSINESS_NOT_FOUND";
