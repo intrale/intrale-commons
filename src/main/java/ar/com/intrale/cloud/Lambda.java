@@ -35,6 +35,7 @@ public class Lambda extends MicronautRequestHandler<APIGatewayProxyRequestEvent,
 		LOGGER.info("Ejecutando lambda");
 		
 		if ("OPTIONS".equals(request.getHttpMethod())){
+			LOGGER.info("Retorno para metodo OPTIONS");
 			APIGatewayProxyResponseEvent responseEvent = new APIGatewayProxyResponseEvent();
 			Map<String, String> responseHeaders = new HashMap<String, String>();
 			responseHeaders.put(FunctionConst.ACCESS_CONTROL_ALLOW_ORIGIN, FunctionConst.ALL);
@@ -45,8 +46,10 @@ public class Lambda extends MicronautRequestHandler<APIGatewayProxyRequestEvent,
 	    	return responseEvent;
 		}
 		
+		LOGGER.info("Obteniendo funcion");
 		function = builder.getfunction(request.getHeaders());
 		
+		LOGGER.info("Llamando a funcion");
     	return function.lambdaApply(request.getHeaders(), request.getPathParameters(), request.getBody());
     }  
 
