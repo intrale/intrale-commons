@@ -1,7 +1,4 @@
 package ar.com.intrale.cloud;
-import java.util.HashMap;
-import java.util.Map;
-
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
@@ -13,7 +10,6 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent
 
 import io.micronaut.core.annotation.Introspected;
 import io.micronaut.function.aws.MicronautRequestHandler;
-import io.micronaut.http.HttpMethod;
 
 @Introspected
 public class Lambda extends MicronautRequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
@@ -34,7 +30,8 @@ public class Lambda extends MicronautRequestHandler<APIGatewayProxyRequestEvent,
     public APIGatewayProxyResponseEvent execute(APIGatewayProxyRequestEvent request) {
 		LOGGER.info("Ejecutando lambda");
 		
-		if ("OPTIONS".equals(request.getHttpMethod())){
+		LOGGER.info("HTTP Method:" + request.getHttpMethod());
+		/*if ("OPTIONS".equals(request.getHttpMethod())){
 			LOGGER.info("Retorno para metodo OPTIONS");
 			APIGatewayProxyResponseEvent responseEvent = new APIGatewayProxyResponseEvent();
 			Map<String, String> responseHeaders = new HashMap<String, String>();
@@ -44,7 +41,7 @@ public class Lambda extends MicronautRequestHandler<APIGatewayProxyRequestEvent,
 			responseEvent.setHeaders(responseHeaders); 
 	    	responseEvent.setIsBase64Encoded(Boolean.TRUE);
 	    	return responseEvent;
-		}
+		}*/
 		
 		LOGGER.info("Obteniendo funcion");
 		function = builder.getfunction(request.getHeaders());
