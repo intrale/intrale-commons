@@ -7,7 +7,7 @@
  <parent>
     <groupId>ar.com.intrale.cloud</groupId>
     <artifactId>parent</artifactId>
-    <version>#env.VERSION#</version>
+    <version>${env.VERSION}</version>
   </parent>
 
   <repositories>
