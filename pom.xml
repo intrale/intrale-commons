@@ -4,14 +4,10 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>commons</artifactId>
 
-  <properties>
-  	<actual.version>${env.VERSION}</actual.version>
-  </properties>
-
-  <parent>
+ <parent>
     <groupId>ar.com.intrale.cloud</groupId>
     <artifactId>parent</artifactId>
-    <version>${actual.version}</version>
+    <version>#env.VERSION#</version>
   </parent>
 
   <repositories>
