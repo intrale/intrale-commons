@@ -16,6 +16,12 @@ jobs:
           java-version: '11' # The JDK version to make available on the path.
           java-package: jdk # (jre, jdk, or jdk+fx) - defaults to jdk
           architecture: x64 # (x64 or x86) - defaults to x64
+    - name: Patch Version definition
+      env:
+        VERSION_PREFIX: ${{ secrets.VERSION_PREFIX }}
+        PATCH_VERSION: ${{ secrets.PATCH_VERSION }}
+      run: |
+        echo "PATCH_VERSION=$(($PATCH_VERSION))" >> $GITHUB_ENV          
     - name: Version definition
       env:
         VERSION_PREFIX: ${{ secrets.VERSION_PREFIX }}
