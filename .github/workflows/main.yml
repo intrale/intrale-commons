@@ -27,9 +27,11 @@ jobs:
         echo "VERSION:${{ env.VERSION }}"          
     - name: Deploy to Github Package Registry
       env:
+        VERSION: ${{ env.VERSION }}
         MAVEN_SERVER_USERNAME: ${{ secrets.MAVEN_SERVER_USERNAME }}
         MAVEN_SERVER_PASSWORD: ${{ secrets.MAVEN_SERVER_PASSWORD }}
       run: |
+        echo "VERSION ON DEPLOY:${{ env.VERSION }}"  
         mkdir -p ~/.m2
         echo "<settings><servers><server><id>github</id><username>${MAVEN_SERVER_USERNAME}</username><password>${MAVEN_SERVER_PASSWORD}</password></server></servers></settings>" > ~/.m2/settings.xml
         mvn deploy
