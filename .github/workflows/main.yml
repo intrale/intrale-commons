@@ -46,7 +46,7 @@ jobs:
         package-name: 'ar.com.intrale.cloud.Commons'
         num-old-versions-to-delete: 1
         token: ${{ secrets.MAVEN_SERVER_PASSWORD }}
-     - name: Call intrale-test
+    - name: Call intrale-test
       if: (github.event.action != 'ping') && (github.event.action != 'pong') 
       run: |
          curl -X POST https://api.github.com/repos/intrale/intrale-test/dispatches \
