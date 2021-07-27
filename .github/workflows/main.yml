@@ -46,3 +46,17 @@ jobs:
         package-name: 'ar.com.intrale.cloud.Commons'
         num-old-versions-to-delete: 1
         token: ${{ secrets.MAVEN_SERVER_PASSWORD }}
+     - name: Call intrale-test
+      if: (github.event.action != 'ping') && (github.event.action != 'pong') 
+      run: |
+         curl -X POST https://api.github.com/repos/intrale/intrale-test/dispatches \
+          -H 'Accept: application/vnd.github.everest-preview+json' \
+          -u ${{ secrets.MAVEN_SERVER_PASSWORD }} \
+          --data '{"event_type": "ping", "client_payload": { "repository": "'"$GITHUB_REPOSITORY"'" }}'
+    - name: Response to intrale-test
+      if: github.event.action == 'ping'
+      run: |
+         curl -X POST https://api.github.com/repos/intrale/intrale-test/dispatches \
+          -H 'Accept: application/vnd.github.everest-preview+json' \
+          -u ${{ secrets.MAVEN_SERVER_PASSWORD }} \
+          --data '{"event_type": "pong", "client_payload": { "repository": "'"$GITHUB_REPOSITORY"'" }}'      
