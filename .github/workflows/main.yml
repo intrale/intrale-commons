@@ -11,6 +11,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - name: Call intrale-parent
+      if: github.event.action != 'ping'  
+      run: |
+         curl -X POST https://api.github.com/repos/intrale/intrale-parent/dispatches \
+          -H 'Accept: application/vnd.github.everest-preview+json' \
+          -u ${{ secrets.MAVEN_SERVER_PASSWORD }} \
+          --data '{"event_type": "ping", "client_payload": { "repository": "'"$GITHUB_REPOSITORY"'" }}'    
     - uses: actions/checkout@v1
     - uses: actions/setup-java@v1
       with:
