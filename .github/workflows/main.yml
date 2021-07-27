@@ -3,6 +3,7 @@ name: Java CI
 on:
   push:
     branches: [ master ]
+  repository_dispatch:
 
 jobs:
   build: 
