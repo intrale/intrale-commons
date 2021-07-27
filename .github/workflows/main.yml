@@ -12,7 +12,7 @@ jobs:
 
     steps:
     - name: Call intrale-parent
-      if: (github.event.action != 'ping') && (github.event.action != 'pong') 
+      if: github.event.action != 'pong' 
       run: |
          curl -X POST https://api.github.com/repos/intrale/intrale-parent/dispatches \
           -H 'Accept: application/vnd.github.everest-preview+json' \
