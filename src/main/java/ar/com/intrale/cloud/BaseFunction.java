@@ -41,9 +41,9 @@ public abstract class BaseFunction<	FUNCTION_REQ,
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(BaseFunction.class);
 
-	protected final Class<Request> providerType = (Class<Request>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[2];
-	protected final Class<Request> requestBuilderType = (Class<Request>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[3];
-	protected final Class<Request> responseBuilderType = (Class<Request>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[4];
+	protected final Class<RequestRoot> providerType = (Class<RequestRoot>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[2];
+	protected final Class<RequestRoot> requestBuilderType = (Class<RequestRoot>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[3];
+	protected final Class<RequestRoot> responseBuilderType = (Class<RequestRoot>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[4];
 	
 	@Inject
    	protected Validator validator;
@@ -139,14 +139,20 @@ public abstract class BaseFunction<	FUNCTION_REQ,
 		String authorization = headers.get(FunctionBuilder.HEADER_AUTHORIZATION);
 		String idToken = headers.get(FunctionBuilder.HEADER_ID_TOKEN);
 		
+		LOGGER.info("INTRALE: authorization:" + authorization);
+		LOGGER.info("INTRALE: idToken:" + idToken);
+		
 		String businessName = headers.get(FunctionBuilder.HEADER_BUSINESS_NAME);
 		if (StringUtils.isEmpty(businessName) && pathParameters!=null) {
 			businessName = pathParameters.get(FunctionBuilder.HEADER_BUSINESS_NAME);
 		}
 
 		if (StringUtils.isEmpty(businessName)) {
+			LOGGER.info("INTRALE: businessName not found");
 			throw new BusinessNotFoundException(new Error(FunctionConst.BUSINESS_NOT_FOUND, FunctionConst.BUSINESS_NOT_FOUND), mapper);
 		}
+		
+		LOGGER.info("INTRALE: validando permisos");
 		
 		if (isSecurityEnabled()) {
 			if (authorization!=null){
@@ -159,6 +165,7 @@ public abstract class BaseFunction<	FUNCTION_REQ,
 				String businessNames = (String) idTokenClaimsSet.getClaims().get(FunctionConst.BUSINESS_ATTRIBUTE);
 				List<String> businessNamesRegistered = Arrays.asList(businessNames.split(FunctionConst.BUSINESS_ATTRIBUTE_SEPARATOR));
 				if (!businessNamesRegistered.contains(businessName)) {
+					LOGGER.info("INTRALE: " + "User " + username + " Unauthorized for business " + businessName);
 					throw new UnauthorizeExeption(new Error(FunctionConst.UNAUTHORIZED, "User " + username + " Unauthorized for business " + businessName), mapper);
 				}
 				
@@ -168,6 +175,7 @@ public abstract class BaseFunction<	FUNCTION_REQ,
 				List groups = getGroups(authClaimsSet);
 				if  ((!StringUtils.isEmpty(getFunctionGroup())) &&
 						((groups==null) || (!groups.contains(getFunctionGroup())))){
+					LOGGER.info("INTRALE: " + "User " + username + " not belong for group " + getFunctionGroup());
 					throw new UnauthorizeExeption(new Error(FunctionConst.UNAUTHORIZED, FunctionConst.UNAUTHORIZED), mapper);
 				}
 				
@@ -252,7 +260,7 @@ public abstract class BaseFunction<	FUNCTION_REQ,
 		this.provider = provider;
 	}
 	
-   	public Class<Request> getProviderType() {
+   	public Class<RequestRoot> getProviderType() {
 		return providerType;
 	}
 	

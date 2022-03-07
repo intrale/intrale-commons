@@ -24,7 +24,7 @@ import ar.com.intrale.cloud.exceptions.UnexpectedException;
 import io.micronaut.core.util.StringUtils;
 import io.micronaut.validation.validator.Validator;
 
-public class StringToRequestBuilder<REQ extends Request> implements Builder<String, REQ> {
+public class StringToRequestBuilder<REQ extends RequestRoot> implements Builder<String, REQ> {
 	
 	public static final String EMPTY_REQUEST = "EMPTY_REQUEST";
 	
@@ -32,7 +32,7 @@ public class StringToRequestBuilder<REQ extends Request> implements Builder<Stri
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(StringToRequestBuilder.class);
 	
-	protected final Class<Request> requestType = (Class<Request>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
+	protected final Class<RequestRoot> requestType = (Class<RequestRoot>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
 	
    	@Inject
    	protected ObjectMapper mapper;
@@ -60,13 +60,13 @@ public class StringToRequestBuilder<REQ extends Request> implements Builder<Stri
     	return requestObject;
 	}
 
-	protected void validateRequestBuilded(Request requestObject) throws BadRequestException {
+	protected void validateRequestBuilded(RequestRoot requestObject) throws BadRequestException {
 		Collection<Error> errors = new ArrayList<Error>();
-    	Set<ConstraintViolation<Request>> validatorErrors = validator.validate(requestObject, Default.class);
+    	Set<ConstraintViolation<RequestRoot>> validatorErrors = validator.validate(requestObject, Default.class);
     	if (validatorErrors.size()>0) {
-	    	Iterator<ConstraintViolation<Request>> it = validatorErrors.iterator();
+	    	Iterator<ConstraintViolation<RequestRoot>> it = validatorErrors.iterator();
 	    	while (it.hasNext()) {
-				ConstraintViolation<ar.com.intrale.cloud.Request> constraintViolation = (ConstraintViolation<ar.com.intrale.cloud.Request>) it.next();
+				ConstraintViolation<ar.com.intrale.cloud.RequestRoot> constraintViolation = (ConstraintViolation<ar.com.intrale.cloud.RequestRoot>) it.next();
 				errors.add(new Error(constraintViolation.getPropertyPath().toString(), constraintViolation.getMessage()));
 			}
 	    	LOGGER.info("retornando error");
