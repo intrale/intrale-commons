@@ -70,7 +70,7 @@ public abstract class BaseFunction<	FUNCTION_REQ,
 		try {
 			provider = (PROV) applicationContext.getBean(providerType);
 		} catch (Exception e) {
-			LOGGER.info("INTRALE: No fue posible inicializar el provider:" + providerType);
+			LOGGER.info("INTRALE: No fue posible inicializar el provider:" + providerType + ", =>" + FunctionException.toString(e));
 			return Boolean.FALSE;
 		}
 		return Boolean.TRUE;
@@ -102,6 +102,7 @@ public abstract class BaseFunction<	FUNCTION_REQ,
 	    	return buildResponse(res);
 	    	
 		} catch (FunctionException e) {
+			LOGGER.error(FunctionException.toString(e));
 			HttpResponse<String> response = e.getResponse();
 			LOGGER.info("INTRALE: response => \n" + response.body());
 			return response;

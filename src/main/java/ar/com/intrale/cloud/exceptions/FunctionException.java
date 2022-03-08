@@ -6,6 +6,9 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collection;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -16,6 +19,8 @@ import io.micronaut.http.HttpResponseFactory;
 import io.micronaut.http.HttpStatus;
 
 public abstract class FunctionException extends java.lang.Exception {
+	
+	private static final Logger LOGGER = LoggerFactory.getLogger(FunctionException.class);
 
 	private Collection<Error> errors = new ArrayList<Error>();
 	
@@ -40,6 +45,7 @@ public abstract class FunctionException extends java.lang.Exception {
 			response.setStatusCode(getHttpStatus().getCode());
 			return HttpResponseFactory.INSTANCE.status(getHttpStatus()).body(Base64.getEncoder().encodeToString(objectMapper.writeValueAsString(response).getBytes()));
 		} catch (JsonProcessingException e) {
+			LOGGER.error(FunctionException.toString(e));
 			return HttpResponseFactory.INSTANCE.status(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
 		}
 	}

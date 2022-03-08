@@ -69,7 +69,7 @@ public class StringToRequestBuilder<REQ extends RequestRoot> implements Builder<
 				ConstraintViolation<ar.com.intrale.cloud.RequestRoot> constraintViolation = (ConstraintViolation<ar.com.intrale.cloud.RequestRoot>) it.next();
 				errors.add(new Error(constraintViolation.getPropertyPath().toString(), constraintViolation.getMessage()));
 			}
-	    	LOGGER.info("retornando error");
+	    	LOGGER.info("retornando BadRequestException");
 	    	throw new BadRequestException(errors, mapper);
     	}
 	}
