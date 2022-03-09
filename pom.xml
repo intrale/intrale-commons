@@ -5,7 +5,7 @@
   <artifactId>commons</artifactId>
 
  <parent>
-    <groupId>ar.com.intrale.cloud</groupId>
+    <groupId>ar.com.intrale</groupId>
     <artifactId>parent</artifactId>
     <version>DEV</version>
   </parent>
@@ -92,7 +92,7 @@
             </path>
           </annotationProcessorPaths>
           <compilerArgs>
-            <arg>-Amicronaut.processing.group=ar.com.intrale.cloud</arg>
+            <arg>-Amicronaut.processing.group=ar.com.intrale</arg>
             <arg>-Amicronaut.processing.module=IntraleFunction</arg>
           </compilerArgs>
         </configuration>
