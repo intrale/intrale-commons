@@ -1,8 +1,8 @@
 package ar.com.intrale.tools;
 
+import java.awt.List;
 import java.lang.reflect.ParameterizedType;
-
-import javax.inject.Inject;
+import java.util.Collection;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,11 +20,14 @@ public abstract class JsonConverter<E> {
 	
 	protected final Class converterType = (Class<RequestRoot>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
 	
-   	@Inject
-   	protected ObjectMapper mapper;
+   	protected ObjectMapper mapper = new ObjectMapper();
 
     public String convert(final E entity) {
         try {
+        	LOGGER.info("convert:" + converterType.getName());
+        	if (mapper==null) {
+        		LOGGER.info("ObjectMapper es nulo");
+        	}
 			return mapper.writeValueAsString(entity);
 		} catch (JsonProcessingException e) {
 			LOGGER.error(FunctionException.toString(e));
@@ -34,7 +37,8 @@ public abstract class JsonConverter<E> {
 
     public E unconvert(final String string) {
     	try {
-			return (E) mapper.readValue(string, converterType);
+    		LOGGER.info("unconvert:" + converterType.getName());
+			return mapper.readValue(string, mapper.getTypeFactory().constructCollectionType(Collection.class, converterType));
 		} catch (Exception e) {
 			LOGGER.error(FunctionException.toString(e));
 			return null;

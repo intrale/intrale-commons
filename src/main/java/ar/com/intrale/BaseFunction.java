@@ -33,7 +33,7 @@ import io.micronaut.validation.validator.Validator;
 /**
  * Funcion cuya entrada y salida esta en formato JSON
  */
-public abstract class BaseFunction<	FUNCTION_REQ, 
+public abstract class BaseFunction<	FUNCTION_REQ extends RequestRoot, 
 									FUNCTION_RES, 
 									PROV, 
 									REQ_BUILDER extends Builder,

@@ -33,7 +33,7 @@ public class BeanFactory {
 	@Bean @Singleton
 	public ObjectMapper ObjectMapper() {
 		return new ObjectMapper();
-	}
+	}	
 	
 	@Bean @Singleton @Named(USER_POOL_ID_URL)
 	public String getUserPoolIdUrl() {
