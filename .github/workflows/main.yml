@@ -11,30 +11,19 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Call intrale-parent
-      if: (github.event.action != 'ping_parent') && (github.event.action != 'pong_parent') 
-      run: |
-         curl -X POST https://api.github.com/repos/intrale/intrale-parent/dispatches \
-          -H 'Accept: application/vnd.github.everest-preview+json' \
-          -u ${{ secrets.MAVEN_SERVER_PASSWORD }} \
-          --data '{"event_type": "ping_child", "client_payload": { "repository": "'"$GITHUB_REPOSITORY"'" }}'    
     - uses: actions/checkout@v1
       if: (github.event.action == 'ping_parent') || (github.event.action == 'pong_parent') 
     - uses: actions/setup-java@v1
-      if: (github.event.action == 'ping_parent') || (github.event.action == 'pong_parent') 
       with:
           java-version: '11' # The JDK version to make available on the path.
           java-package: jdk # (jre, jdk, or jdk+fx) - defaults to jdk
           architecture: x64 # (x64 or x86) - defaults to x64
     - name: Deploy to Github Package Registry
-      if: (github.event.action == 'ping_parent') || (github.event.action == 'pong_parent')
       env:
         VERSION: ${{ secrets.VERSION }}
         MAVEN_SERVER_USERNAME: ${{ secrets.MAVEN_SERVER_USERNAME }}
         MAVEN_SERVER_PASSWORD: ${{ secrets.MAVEN_SERVER_PASSWORD }}
       run: |
-        sed -i "s/DEV/$VERSION/gi" pom.xml
-        cat pom.xml
         mkdir -p ~/.m2
         echo "<settings><servers><server><id>github</id><username>${MAVEN_SERVER_USERNAME}</username><password>${MAVEN_SERVER_PASSWORD}</password></server></servers></settings>" > ~/.m2/settings.xml
         mvn deploy
@@ -46,10 +35,3 @@ jobs:
         package-name: 'ar.com.intrale.Commons'
         num-old-versions-to-delete: 1
         token: ${{ secrets.MAVEN_SERVER_PASSWORD }}
-    - name: Call intrale-test
-      if: (github.event.action == 'ping_parent') || (github.event.action == 'pong_parent')
-      run: |
-         curl -X POST https://api.github.com/repos/intrale/intrale-test/dispatches \
-          -H 'Accept: application/vnd.github.everest-preview+json' \
-          -u ${{ secrets.MAVEN_SERVER_PASSWORD }} \
-          --data '{"event_type": "ping_parent", "client_payload": { "repository": "'"$GITHUB_REPOSITORY"'" }}' 
