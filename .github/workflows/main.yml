@@ -90,9 +90,17 @@ jobs:
       with:
         tag: "VER_${{ env.VER_COMMONS_TEXT }}"
         message: "VER_${{ env.VER_COMMONS_TEXT }}"
+    - name: Delete old packages
+      uses: actions/delete-package-versions@v3
+      with:
+        owner: 'llarreta'
+        repo: 'intrale'
+        package-name: 'ar.com.intrale.commons'
+        min-versions-to-keep: 3
+        token: ${{ secrets.MAVEN_SERVER_PASSWORD }}              
     - name: Call intrale-test recompile with new version of commons
       run: |
          curl -X POST https://api.github.com/repos/intrale/intrale-test/dispatches \
           -H 'Accept: application/vnd.github.everest-preview+json' \
           -u ${{ secrets.MAVEN_SERVER_PASSWORD }} \
-          --data '{"event_type": "ping_parent", "client_payload": { "repository": "'"$GITHUB_REPOSITORY"'" }}'
+          --data '{"event_type": "parent_new_version", "client_payload": { "repository": "'"$GITHUB_REPOSITORY"'" }}'
