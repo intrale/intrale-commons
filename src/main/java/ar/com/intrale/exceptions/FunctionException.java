@@ -12,8 +12,8 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import ar.com.intrale.Error;
-import ar.com.intrale.FunctionExceptionResponse;
+import ar.com.intrale.messages.Error;
+import ar.com.intrale.messages.FunctionExceptionResponse;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.HttpResponseFactory;
 import io.micronaut.http.HttpStatus;

@@ -13,6 +13,7 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import ar.com.intrale.exceptions.FunctionException;
+import ar.com.intrale.messages.Response;
 import io.micronaut.http.HttpResponse;
 
 @Singleton

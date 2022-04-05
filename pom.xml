@@ -167,5 +167,12 @@
     </plugins>
   </build>
 
+  <dependencies>
+  	<dependency>
+		<groupId>ar.com.intrale</groupId>
+		<artifactId>core</artifactId>
+		<version>DEV_CORE</version>
+	</dependency>
+  </dependencies>
 
 </project>

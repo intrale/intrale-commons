@@ -4,7 +4,7 @@ import java.util.Collection;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import ar.com.intrale.Error;
+import ar.com.intrale.messages.Error;
 import io.micronaut.http.HttpStatus;
 
 public class BusinessNotFoundException extends FunctionException {

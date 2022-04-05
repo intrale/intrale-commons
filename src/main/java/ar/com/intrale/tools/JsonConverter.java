@@ -1,6 +1,5 @@
 package ar.com.intrale.tools;
 
-import java.awt.List;
 import java.lang.reflect.ParameterizedType;
 import java.util.Collection;
 
@@ -10,8 +9,8 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import ar.com.intrale.RequestRoot;
 import ar.com.intrale.exceptions.FunctionException;
+import ar.com.intrale.messages.RequestRoot;
 import io.micronaut.core.util.StringUtils;
 
 public abstract class JsonConverter<E> {

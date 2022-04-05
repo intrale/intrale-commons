@@ -21,6 +21,8 @@ import ar.com.intrale.exceptions.BadRequestException;
 import ar.com.intrale.exceptions.EmptyRequestException;
 import ar.com.intrale.exceptions.FunctionException;
 import ar.com.intrale.exceptions.UnexpectedException;
+import ar.com.intrale.messages.RequestRoot;
+import ar.com.intrale.messages.Error;
 import io.micronaut.core.util.StringUtils;
 import io.micronaut.validation.validator.Validator;
 
@@ -66,7 +68,7 @@ public class StringToRequestBuilder<REQ extends RequestRoot> implements Builder<
     	if (validatorErrors.size()>0) {
 	    	Iterator<ConstraintViolation<RequestRoot>> it = validatorErrors.iterator();
 	    	while (it.hasNext()) {
-				ConstraintViolation<ar.com.intrale.RequestRoot> constraintViolation = (ConstraintViolation<ar.com.intrale.RequestRoot>) it.next();
+				ConstraintViolation<RequestRoot> constraintViolation = (ConstraintViolation<RequestRoot>) it.next();
 				errors.add(new Error(constraintViolation.getPropertyPath().toString(), constraintViolation.getMessage()));
 			}
 	    	LOGGER.info("retornando BadRequestException");
