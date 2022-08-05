@@ -1,7 +1,7 @@
 package ar.com.intrale.tools;
 
 import java.lang.reflect.ParameterizedType;
-import java.util.Collection;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,7 +37,7 @@ public abstract class JsonConverter<E> {
     public E unconvert(final String string) {
     	try {
     		LOGGER.info("unconvert:" + converterType.getName());
-			return mapper.readValue(string, mapper.getTypeFactory().constructCollectionType(Collection.class, converterType));
+			return mapper.readValue(string, mapper.getTypeFactory().constructCollectionType(Set.class, converterType));
 		} catch (Exception e) {
 			LOGGER.error(FunctionException.toString(e));
 			return null;

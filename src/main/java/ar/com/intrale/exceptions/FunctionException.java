@@ -23,8 +23,8 @@ public abstract class FunctionException extends java.lang.Exception {
 	private static final Logger LOGGER = LoggerFactory.getLogger(FunctionException.class);
 
 	private Collection<Error> errors = new ArrayList<Error>();
-	
-   	protected ObjectMapper objectMapper;
+
+	protected ObjectMapper objectMapper;
 	
 	public FunctionException(Error error, ObjectMapper objectMapper){
 		this.objectMapper = objectMapper;
@@ -38,6 +38,9 @@ public abstract class FunctionException extends java.lang.Exception {
 	
 	protected  abstract HttpStatus getHttpStatus();
 	
+   	public Collection<Error> getErrors() {
+		return errors;
+	}
 
 	public HttpResponse<String> getResponse(){
 		try {

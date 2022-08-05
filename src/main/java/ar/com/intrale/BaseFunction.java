@@ -26,7 +26,9 @@ import ar.com.intrale.exceptions.TokenNotFoundException;
 import ar.com.intrale.exceptions.UnauthorizeExeption;
 import ar.com.intrale.exceptions.UnexpectedException;
 import ar.com.intrale.messages.RequestRoot;
+import ar.com.intrale.messages.Response;
 import ar.com.intrale.messages.Error;
+import ar.com.intrale.messages.FunctionExceptionResponse;
 import io.micronaut.context.ApplicationContext;
 import io.micronaut.core.util.StringUtils;
 import io.micronaut.http.HttpResponse;
@@ -34,6 +36,8 @@ import io.micronaut.validation.validator.Validator;
 
 /**
  * Funcion cuya entrada y salida esta en formato JSON
+ * Importante mantener la relacion 1 a 1 entre funcion y provider utilizado
+ * En caso de necesitar utilizar mas de un provider, separar la logica en dos funciones
  */
 public abstract class BaseFunction<	FUNCTION_REQ extends RequestRoot, 
 									FUNCTION_RES, 
@@ -281,6 +285,25 @@ public abstract class BaseFunction<	FUNCTION_REQ extends RequestRoot,
 
 	protected boolean isSecurityEnabled() {
 		return !StringUtils.isEmpty(getFunctionGroup());
+	}
+	
+	/**
+	 * Invoca a otra funcion
+	 * @param functionClass
+	 * @param callRequest
+	 * @throws FunctionException
+	 */
+	protected Response callFunction(Class functionClass, RequestRoot callRequest, RequestRoot parentRequest) {
+		try {
+			callRequest.setRequestId(parentRequest.getRequestId());
+			callRequest.setHeaders(parentRequest.getHeaders());
+			callRequest.setPathParameters(parentRequest.getPathParameters());
+			BaseFunction function = (BaseFunction) applicationContext.getBean(functionClass);
+			Response response = (Response) function.execute(callRequest);
+			return response;
+		} catch (FunctionException e) {
+			return new FunctionExceptionResponse(e.getErrors());
+		}
 	}
 	
 }
