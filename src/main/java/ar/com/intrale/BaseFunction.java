@@ -149,20 +149,13 @@ public abstract class BaseFunction<	FUNCTION_REQ extends RequestRoot,
 		LOGGER.info("INTRALE: authorization:" + authorization);
 		LOGGER.info("INTRALE: idToken:" + idToken);
 		
-		String businessName = headers.get(FunctionBuilder.HEADER_BUSINESS_NAME);
-		if (StringUtils.isEmpty(businessName) && pathParameters!=null) {
-			businessName = pathParameters.get(FunctionBuilder.HEADER_BUSINESS_NAME);
-		}
-
-		if (StringUtils.isEmpty(businessName)) {
-			LOGGER.info("INTRALE: businessName not found");
-			throw new BusinessNotFoundException(new Error(FunctionConst.BUSINESS_NOT_FOUND, FunctionConst.BUSINESS_NOT_FOUND), mapper);
-		}
+		
 		
 		LOGGER.info("INTRALE: validando permisos");
 		
 		if (isSecurityEnabled()) {
 			if (authorization!=null){
+				String businessName = getBusinessName(headers, pathParameters);
 				
 				JWTClaimsSet authClaimsSet = validateToken(authorization, FunctionConst.ACCESS);
 				JWTClaimsSet idTokenClaimsSet = validateToken(idToken, FunctionConst.ID);
@@ -192,6 +185,20 @@ public abstract class BaseFunction<	FUNCTION_REQ extends RequestRoot,
 			
 		}
 		LOGGER.info("INTRALE: fin validate");
+	}
+
+	protected String getBusinessName(Map<String, String> headers, Map<String, String> pathParameters)
+			throws BusinessNotFoundException {
+		String businessName = headers.get(FunctionBuilder.HEADER_BUSINESS_NAME);
+		if (StringUtils.isEmpty(businessName) && pathParameters!=null) {
+			businessName = pathParameters.get(FunctionBuilder.HEADER_BUSINESS_NAME);
+		}
+
+		if (StringUtils.isEmpty(businessName)) {
+			LOGGER.info("INTRALE: businessName not found");
+			throw new BusinessNotFoundException(new Error(FunctionConst.BUSINESS_NOT_FOUND, FunctionConst.BUSINESS_NOT_FOUND), mapper);
+		}
+		return businessName;
 	}
 
 	protected List getGroups(JWTClaimsSet claimsSet) {
