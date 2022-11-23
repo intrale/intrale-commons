@@ -48,6 +48,13 @@ public class StringToRequestBuilder<REQ extends RequestRoot> implements Builder<
     		throw new EmptyRequestException(new Error(EMPTY_REQUEST, EMPTY_REQUEST), mapper);
     	}
     	
+		Class<RequestRoot> requestType = this.requestType;
+		
+		return buildWithRequestType(headers, source, requestType);
+	}
+
+	protected REQ buildWithRequestType(Map<String, String> headers, String source, Class<RequestRoot> requestType)
+			throws UnexpectedException, BadRequestException {
 		REQ requestObject = null;
 		try {
 			requestObject = (REQ) mapper.readValue(Base64.getDecoder().decode(source), requestType);
