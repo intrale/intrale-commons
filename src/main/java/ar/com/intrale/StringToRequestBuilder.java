@@ -62,10 +62,11 @@ public class StringToRequestBuilder<REQ extends RequestRoot> implements Builder<
 			LOGGER.error("Ocurrio un error parseando JSON:" + FunctionException.toString(e));
 			throw new UnexpectedException(new Error(UNEXPECTED, e.getMessage()), mapper);
 		}
-		
+
+		requestObject.setHeaders(headers);
+
     	validateRequestBuilded(requestObject);
 
-    	requestObject.setHeaders(headers);
     	return requestObject;
 	}
 

@@ -4,6 +4,7 @@ import java.lang.reflect.ParameterizedType;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -92,8 +93,12 @@ public abstract class BaseFunction<	FUNCTION_REQ extends RequestRoot,
     	LOGGER.info("INTRALE: pathParameters => \n" + pathParameters);
     	
     	try {
-    		
-    		validate(headers, pathParameters);
+
+			LOGGER.info("INTRALE: Normalizando headers keys");
+			headers = normalizeHeaders(headers);
+
+			LOGGER.info("INTRALE: Validando headers & parameters");
+			validate(headers, pathParameters);
     		
     		LOGGER.info("INTRALE: Construyendo request");
     		
@@ -121,7 +126,11 @@ public abstract class BaseFunction<	FUNCTION_REQ extends RequestRoot,
 		return response;
         
 	}
-	
+
+	private static Map<String, String> normalizeHeaders(Map<String, String> headers) {
+		return headers.keySet().stream().collect(Collectors.toMap(element -> element.toLowerCase(), element -> headers.get(element)));
+	}
+
 	public APIGatewayProxyResponseEvent lambdaApply(Map <String, String> headers, Map <String, String> pathParameters, String request) {
 		Object response = msApply(headers, pathParameters, request);
 		RES_BUILDER builder = (RES_BUILDER) applicationContext.getBean(responseBuilderType);
