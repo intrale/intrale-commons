@@ -17,10 +17,10 @@ import io.micronaut.inject.qualifiers.Qualifiers;
 public class FunctionBuilder {
 	
 	public static final String HEADER_FUNCTION = "function";
-	public static final String HEADER_AUTHORIZATION = "Authorization";
+	public static final String HEADER_AUTHORIZATION = "authorization";
 	public static final String HEADER_ID_TOKEN = "idtoken";
 	public static final String HEADER_BUSINESS_NAME = "businessname";
-	public static final String HEADER_CONTENT_TYPE = "Content-Type";
+	public static final String HEADER_CONTENT_TYPE = "content-type";
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(FunctionBuilder.class);
 	
