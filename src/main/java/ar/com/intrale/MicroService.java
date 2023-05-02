@@ -54,7 +54,10 @@ public class MicroService {
 		headers.put(FunctionBuilder.HEADER_AUTHORIZATION, authorization);
 		headers.put(FunctionBuilder.HEADER_BUSINESS_NAME, businessName);
 		headers.put(FunctionBuilder.HEADER_FUNCTION, functionName);
-		
+
+		// No es necesario normalizar headers porque los ponemos explicitamente con el formato del FunctionBuilder
+		// En caso de que eso se modifique, considerar el impacto en la normalizacion
+
 		function = builder.getfunction(headers);
 		
 		return function.msApply(headers, null, request);

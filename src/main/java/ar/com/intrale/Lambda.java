@@ -46,11 +46,15 @@ public class Lambda extends MicronautRequestHandler<APIGatewayProxyRequestEvent,
 	    	return responseEvent;
 		}
 		
+
+		LOGGER.info("INTRALE: Normalizando headers keys");
+		Map<String, String> headers = BaseFunction.normalizeHeaders(request.getHeaders());
+
 		LOGGER.info("Obteniendo funcion");
-		function = builder.getfunction(request.getHeaders());
+		function = builder.getfunction(headers);
 		
 		LOGGER.info("Llamando a funcion");
-    	return function.lambdaApply(request.getHeaders(), request.getPathParameters(), request.getBody());
+    	return function.lambdaApply(headers, request.getPathParameters(), request.getBody());
     }  
 
 	public BaseFunction getFunction() {

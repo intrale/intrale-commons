@@ -94,8 +94,8 @@ public abstract class BaseFunction<	FUNCTION_REQ extends RequestRoot,
     	
     	try {
 
-			LOGGER.info("INTRALE: Normalizando headers keys");
-			headers = normalizeHeaders(headers);
+			//LOGGER.info("INTRALE: Normalizando headers keys");
+			//headers = normalizeHeaders(headers);
 
 			LOGGER.info("INTRALE: Validando headers & parameters");
 			validate(headers, pathParameters);
@@ -127,7 +127,7 @@ public abstract class BaseFunction<	FUNCTION_REQ extends RequestRoot,
         
 	}
 
-	private static Map<String, String> normalizeHeaders(Map<String, String> headers) {
+	public static Map<String, String> normalizeHeaders(Map<String, String> headers) {
 		return headers.keySet().stream().collect(Collectors.toMap(element -> element.toLowerCase(), element -> headers.get(element)));
 	}
 
